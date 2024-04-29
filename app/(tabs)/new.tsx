@@ -1,32 +1,49 @@
 import { StyleSheet } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
+import AdminTemplate from '@/components/AdminTemplate';
 import { Text, View } from '@/components/Themed';
 
 export default function TabNewScreen() {
+  // const [data, setData] = useState(tableData);
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>New Product</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/new.tsx" />
-    </View>
+    <AdminTemplate topLayerStyle={{height: 400}}>
+      <Text style={styles.title}>新增商品</Text>
+      <View style={styles.appendCover}>
+        <Text>上傳照片</Text>
+      </View>
+      <View style={styles.mainCard}>
+      </View>
+    </AdminTemplate>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  mainCard: {
+    marginVertical: 20,
+    alignItems: 'flex-start',
+    backgroundColor: "#FFF",
+    width: '90%',
+    height: 200,
+    marginLeft: 20,
+    borderRadius: 10,
+    zIndex: 2,
+    padding: 20
+  },
+  appendCover: {
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: "#F1F1F1",
+    width: '90%',
+    height: 150,
+    marginLeft: 20,
+    borderRadius: 10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 40,
     fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
+    marginTop: 80,
+    marginLeft: 40,
+    marginBottom: 10
+  }
 });

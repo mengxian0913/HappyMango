@@ -2,14 +2,15 @@ import { StyleSheet } from 'react-native';
 import React from 'react';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
+import AdminTemplate from '@/components/AdminTemplate';
 import { Text, View } from '@/components/Themed';
 
 export default function TabAdminScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Admin</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/admin.tsx" />
+      <AdminTemplate>
+        <Text style={styles.title}>Admin</Text>
+      </AdminTemplate>
     </View>
   );
 }

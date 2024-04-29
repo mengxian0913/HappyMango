@@ -1,32 +1,129 @@
 import { StyleSheet } from 'react-native';
 import React from 'react';
 
+import AdminTemplate from '@/components/AdminTemplate';
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 
 export default function TabOrderScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Order Info</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/order.tsx" />
-    </View>
+    <AdminTemplate>
+      <Text style={styles.title}>查看訂單</Text>
+      <View style={styles.mainCard}>
+        <Text style={styles.cardTitle}>最新訂單</Text>
+        <Text style={styles.cardContent}>訂單編號：00280187-10838-3092</Text>
+        <Text style={styles.cardContent}>訂單人：Alan Jackson</Text>
+        <Text style={styles.cardContent}>下訂時間：2024/04/15/12：15 </Text>
+        <Text style={styles.cardEvent}>點擊進行查看 </Text>
+      </View>
+      <View style={styles.navigator}>
+        <Text style={[styles.navigatorTab, styles.navigatorTabActive]}>正在進行的訂單</Text>
+        <Text style={styles.navigatorTab}>未確認的訂單</Text>
+        <Text style={styles.navigatorTab}>已完成的訂單</Text>
+      </View>
+      <View>
+        <Text style={styles.listTime}>2024-04-14</Text>
+      </View>
+      <View style={[styles.listFirstCard, styles.listCard]}>
+        <Text style={styles.listCardText}>訂單編號：00280187-10838-3092</Text>
+        <Text style={styles.listCardText}>訂單人：Alan Jackson</Text>
+        <Text style={{fontWeight: 'bold', padding: 2, paddingTop: 8}}>點擊進行查看 </Text>
+      </View>
+      <View style={styles.listCard}>
+        <Text style={styles.listCardText}>訂單編號：00280187-10838-3071</Text>
+        <Text style={styles.listCardText}>訂單人：Alan Jackson</Text>
+        <Text style={{fontWeight: 'bold', padding: 2, paddingTop: 8}}>點擊進行查看 </Text>
+      </View>
+      <View style={styles.listCard}>
+        <Text style={styles.listCardText}>訂單編號：00280187-10838-2292</Text>
+        <Text style={styles.listCardText}>訂單人：Alan Jackson</Text>
+        <Text style={{fontWeight: 'bold', padding: 2, paddingTop: 8}}>點擊進行查看 </Text>
+      </View>
+    </AdminTemplate>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  mainCard: {
+    alignItems: 'flex-start',
+    backgroundColor: "#FFF",
+    width: '90%',
+    height: 200,
+    marginLeft: 20,
+    borderRadius: 10,
+    zIndex: 2,
+    padding: 20
   },
   title: {
-    fontSize: 20,
+    fontSize: 40,
     fontWeight: 'bold',
+    marginTop: 80,
+    marginLeft: 40,
+    marginBottom: 10
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  cardTitle: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginBottom: 10
   },
+  cardContent: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    paddingBottom: 5
+  },
+  cardEvent: {
+    fontSize: 18,
+    marginTop: 20,
+    fontWeight: 'bold'
+  },
+  navigator: {
+    marginVertical: 20,
+    width: '90%',
+    height: 50,
+    marginLeft: 20,
+    borderRadius: 30,
+    backgroundColor: "#FFF",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: 10
+  },
+  navigatorTab: {
+    width: '33%',
+    padding: 5,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontWeight: 'bold',
+    borderRadius: 30
+  },
+  navigatorTabActive: {
+    backgroundColor: '#FFD52D',
+  },
+  listTime: {
+    fontSize: 18,
+    marginLeft: 20,
+    padding: 5,
+    paddingLeft: 10,
+    fontWeight: 'bold',
+    backgroundColor: '#FFD52D',
+    height: 50,
+    width: 150
+  },
+  listFirstCard: {
+    marginTop: -15,
+  },
+  listCardText: {
+    fontWeight: 'bold',
+    padding: 2
+  },
+  listCard: {
+    marginLeft: 20,
+    marginVertical: 5,
+    backgroundColor: '#FFF',
+    width: 350,
+    height: 100,
+    borderRadius: 10,
+    alignItems: 'flex-start',
+    padding: 20,
+    paddingTop: 10,
+  }
 });
