@@ -70,7 +70,7 @@ export default function TabNewScreen() {
           <Text style={styles.smallText}>完成請滑至底部</Text>
           <TouchableOpacity style={styles.clickButton}>
             <Text style={{fontSize: 20, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>新增此商品</Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
         </>
       }
     />

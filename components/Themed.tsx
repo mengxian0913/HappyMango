@@ -2,6 +2,7 @@ import { Text as DefaultText, View as DefaultView } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
 import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 
 type ThemeProps = {
   lightColor?: string;
@@ -37,4 +38,14 @@ export function View(props: ViewProps) {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+}
+
+// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
+export function TabBarIcon(props: {
+  name: React.ComponentProps<typeof Ionicons>['name'];
+  color?: string;
+  size?: number;
+  style? : object
+}) {
+  return <Ionicons size={props.size || 28} style={[{ marginBottom: 0}, props.style]} {...props} />;
 }
