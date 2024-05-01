@@ -1,7 +1,8 @@
 import { StyleSheet, Image, ImageSourcePropType, TextInput } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 import { Text, View, TabBarIcon } from '@/components/Themed';
 import AdminTemplate from '@/components/AdminTemplate';
@@ -13,26 +14,9 @@ interface dataType{
   img: ImageSourcePropType
 }
 
-const listData: dataType[] = [
-  {
-    id: '001',
-    type: "原型食物",
-    name: "愛文芒果",
-    img: require('../../assets/images/001.png')
-  },
-  {
-    id: '002',
-    type: "原型食物",
-    name: "水果組合籃",
-    img: require('../../assets/images/002.png')
-  },
-  {
-    id: '003',
-    type: "精緻食品",
-    name: "芒果冰沙奶蓋",
-    img: require('../../assets/images/003.png')
-  },  
-]
+interface newDataType{
+  [key: string]: dataType[];
+}
 
 const tableData = [
   {
@@ -68,15 +52,31 @@ const tableData = [
 const rebuildListData = (listData: dataType[]) => {
   const newData: { [key: string]: dataType[] } = {};
   for (let data of listData) {
-    if (data.type in newData) newData[data.type].push({ ...data });
-    else newData[data.type] = [{ ...data }];
+    if (data.type in newData){
+      data.img = require('../../assets/images/002.png');
+      newData[data.type].push(data);
+    } 
+    else {
+      data.img = require('../../assets/images/001.png');
+      newData[data.type] = [data];
+    }
   }
   return newData;
 }
 
 const TabHomeScreen = () => {
   const navigation = useNavigation();
-  const [data, setData] = useState(rebuildListData(listData));
+  const [data, setData] = useState<newDataType>({});
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/get_data')
+    .then(response => {
+      setData(rebuildListData(response.data))
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });    
+  }, [])
   return (
     <AdminTemplate
       topLayer={
