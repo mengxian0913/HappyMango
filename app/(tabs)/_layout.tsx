@@ -1,10 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeStackScreen from './adminHome';
-import TabAdminScreen from './admin';
+import TabAdminScreen from './userSetting';
 import TabAnalysisScreen from './analysis';
-import TabNewScreen from './new';
-import OrderStackScreen from './order';
+import TabNewScreen from './newProduct';
+import OrderStackScreen from './orderList';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { NavigationContainer } from '@react-navigation/native';
