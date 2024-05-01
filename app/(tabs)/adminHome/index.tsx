@@ -100,7 +100,7 @@ const TabHomeScreen = () => {
             </View>
             {data[type].map((item, index) => (
               <View style={[styles.listFirstCard, styles.listCard]}>
-                <Image style={{width: 80, height: 80}} source={item.img} />
+                <Image style={{width: 80, height: 80, borderRadius: 10}} source={item.img} />
                 <View style={{padding: 10}}>
                   <Text style={styles.listCardText}>商品名稱：{item.name}</Text>
                   <Text

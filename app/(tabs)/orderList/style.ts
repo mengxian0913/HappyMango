@@ -118,6 +118,17 @@ const styles = StyleSheet.create({
         height: 40,
         width: '100%',
         backgroundColor: '#EC9039',
+    },
+    tabLabel: {
+        top: 0,
+        width: 20,
+        height: 20,
+        textAlign: 'center',
+        position: 'absolute',
+        borderRadius: 20,
+        backgroundColor: 'red',
+        color: '#FFF',
+        zIndex: 2
     }
 });
 

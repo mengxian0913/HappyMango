@@ -1,8 +1,9 @@
 import { TouchableHighlight, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import styles from './style';
+import axios from 'axios';
 
 import AdminTemplate from '@/components/AdminTemplate';
 import { Text, View, TabBarIcon } from '@/components/Themed';
@@ -13,29 +14,9 @@ interface dataType{
   name: string,
 }
 
-const onProgressData: dataType[] = [{
-  id: "00280187-10838-3092",
-  name: "OuO",
-  time: "2024-04-17"
-},{
-  id: "00280187-10838-3092",
-  name: "NNNNNNNN",
-  time: "2024-04-17"
-}]
-const unCheckData: dataType[] = [{
-  id: "00280187-10838-3092",
-  name: "Loss",
-  time: "2024-04-17"
-}]
-const doneData: dataType[] = [{
-  id: "00280187-10838-3092",
-  name: "Alan Jackson",
-  time: "2024-04-17"
-},{
-  id: "00280187-10838-3092",
-  name: "Becker",
-  time: "2024-04-17"
-}]
+interface newDataType{
+  [key: string]: dataType[];
+}
 
 const tableData = [
   {
@@ -55,8 +36,24 @@ const rebuildOrderData = (listData: dataType[]) => {
 
 const OrderScreen = () => {
   const navigation = useNavigation();
-  const [data, setData] = useState(rebuildOrderData(onProgressData));
-  const [isPress, setIsPress] = useState([1, 0, 0])
+  const [data, setData] = useState<newDataType>({});
+  const [onProgressData, setOnProgressData] = useState<dataType[]>([]);
+  const [unCheckData, setUnCheckData] = useState<dataType[]>([]);
+  const [doneData, setDoneData] = useState<dataType[]>([]);
+  const [isPress, setIsPress] = useState([1, 0, 0]);
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/get_order_data')
+    .then(response => {
+      setOnProgressData(response.data.onprogress);
+      setUnCheckData(response.data.uncheck);
+      setDoneData(response.data.done);
+      setData(rebuildOrderData(onProgressData));
+    })
+    .catch(err => {
+      console.log(err);
+    })
+  }, [])
   return (
     <AdminTemplate
       topLayer={
@@ -70,6 +67,7 @@ const OrderScreen = () => {
             <Text style={styles.cardEvent}>點擊進行查看 </Text>
           </View>
           <View style={styles.navigator}>
+            <Text style={[styles.tabLabel, {left: 110}]}>{onProgressData.length}</Text>
             <TouchableHighlight
               onShowUnderlay={() => setIsPress([1, 0, 0])}
               style={[(isPress[0] ? {backgroundColor: '#FFD52D'} : {backgroundColor: '#FFF'}), styles.navigatorTab]}
@@ -77,6 +75,7 @@ const OrderScreen = () => {
             >
               <Text style={{textAlign: 'center'}}>正在進行的訂單</Text>
             </TouchableHighlight>
+            <Text style={[styles.tabLabel, {left: 220}]}>{unCheckData.length}</Text>
             <TouchableHighlight
               onShowUnderlay={() => setIsPress([0, 1, 0])}
               style={[(isPress[1] ? {backgroundColor: '#FFD52D'} : {backgroundColor: '#FFF'}), styles.navigatorTab]}
