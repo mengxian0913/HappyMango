@@ -1,141 +1,82 @@
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeStackScreen from './adminHome';
-import TabAdminScreen from './userSetting';
-import TabAnalysisScreen from './analysis';
-import TabNewScreen from './newProduct';
-import OrderStackScreen from './orderList';
+import React, { useEffect, useState } from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+/* Admin */
+import AdminHome from "./Admin/AdminHome/AdminHome";
+import Analysis from "./Admin/Analysis/Analysis";
+import NewProduct from "./Admin/NewProduct/NewProduct";
+import OrderList from "./Admin/OrderList/OrderList";
+import UserSetting from "./Admin/UserSetting/UserSetting";
+/* Customer */
+import CustomerHome from "./Customer/CustomerHome/CustomerHome";
 
-import { useColorScheme } from '@/components/useColorScheme';
-import { NavigationContainer } from '@react-navigation/native';
-import { TabBarIcon } from '@/components/Themed';
+import { NavigationContainer } from "@react-navigation/native";
+import { TabBarIcon } from "@/components/Themed";
 
-const ButtomTabs = createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
+const TabLayout = () => {
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
-function TabLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    // check is admin //
+    setIsAdmin(false);
+  }, []);
 
   return (
     <NavigationContainer independent={true}>
-      <ButtomTabs.Navigator screenOptions={{ headerShown: false }}>
-        <ButtomTabs.Screen
+      <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Screen
           name="index"
-          component={HomeStackScreen}
+          component={isAdmin ? AdminHome : CustomerHome}
           options={{
-            title: 'Home',
-            tabBarIcon: ({ color }) => <TabBarIcon name="home-outline" color={color} />,
+            title: "Home",
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="home-outline" color={color} />
+            ),
           }}
         />
-        <ButtomTabs.Screen
+        <Tab.Screen
           name="order"
-          component={OrderStackScreen}
+          component={OrderList}
           options={{
-            title: 'Order Info',
-            tabBarIcon: ({ color }) => <TabBarIcon name="receipt" color={color} />,
+            title: "Order Info",
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="receipt" color={color} />
+            ),
           }}
         />
-        <ButtomTabs.Screen
+        <Tab.Screen
           name="new"
-          component={TabNewScreen}
+          component={NewProduct}
           options={{
-            title: 'New Product',
-            tabBarIcon: ({ color }) => <TabBarIcon name="add-circle-outline" color={color} />,
+            title: "New Product",
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="add-circle-outline" color={color} />
+            ),
           }}
         />
-        <ButtomTabs.Screen
+        <Tab.Screen
           name="analysis"
-          component={TabAnalysisScreen}
+          component={Analysis}
           options={{
-            title: 'Analysis',
-            tabBarIcon: ({ color }) => <TabBarIcon name="analytics-outline" color={color} />,
+            title: "Analysis",
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="analytics-outline" color={color} />
+            ),
           }}
         />
-        <ButtomTabs.Screen
+        <Tab.Screen
           name="admin"
-          component={TabAdminScreen}
+          component={UserSetting}
           options={{
-            title: 'Admin',
-            tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
+            title: "Admin",
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="person" color={color} />
+            ),
           }}
         />
-      </ButtomTabs.Navigator>
+      </Tab.Navigator>
     </NavigationContainer>
-=======
-import React from "react";
-import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
-
-import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
-
-interface Props {
-  name: React.ComponentProps<typeof Ionicons>["name"];
-  color: string;
-}
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-const TabBarIcon = ({ name, color }: Props) => {
-  return (
-    <Ionicons size={28} style={{ marginBottom: 0 }} name={name} color={color} />
-  );
-};
-
-const TabLayout = () => {
-  const colorScheme = useColorScheme();
-
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: useClientOnlyValue(false, false),
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="home-outline" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="order"
-        options={{
-          title: "Order Info",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="receipt" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="new"
-        options={{
-          title: "New Product",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="add-circle-outline" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="analysis"
-        options={{
-          title: "Analysis",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="analytics-outline" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="admin"
-        options={{
-          title: "Admin",
-          tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
-        }}
-      />
-    </Tabs>
   );
 };
 
