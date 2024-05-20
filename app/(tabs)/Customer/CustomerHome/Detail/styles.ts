@@ -63,6 +63,28 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 10,
   },
+  bestDate: {
+    marginTop: 10,
+    width: screenWidth * 0.85,
+    padding: 10,
+    borderRadius: 15,
+    backgroundColor: Colors.light.tint,
+  },
+  commentContainer: {
+    marginTop: 10,
+    width: screenWidth * 0.9,
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: Colors.light.background,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  commentIcon: {
+    flex: 1,
+    position: "absolute",
+    top: 15,
+    right: 10,
+  },
 });
 
 export default styles;

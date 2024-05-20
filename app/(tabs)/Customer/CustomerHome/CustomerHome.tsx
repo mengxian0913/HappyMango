@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import React, { createContext, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationProp,
+} from "@react-navigation/native-stack";
 import {
   ScrollView,
   TouchableHighlight,
@@ -24,11 +25,13 @@ interface selectBarProps {
 }
 
 interface itemProps {
+  id: number;
   title: string;
   price: number;
   sell: number;
   description: string;
   image: string;
+  bestDate: number;
 }
 
 const SelectBar = ({ onSelect, setOnSelect }: selectBarProps) => {
@@ -79,24 +82,39 @@ const SelectBar = ({ onSelect, setOnSelect }: selectBarProps) => {
 type RootStackParamList = {
   Items: undefined;
   Detail: {
+    id: number;
     title: string;
     price: number;
     sell: number;
     description: string;
     image: string;
+    bestDate: number;
   };
 };
 
-const Item = ({ title, price, sell, description, image }: itemProps) => {
+export const ItemContext = createContext<itemProps | null>(null);
+
+const Item = ({
+  id,
+  title,
+  price,
+  sell,
+  description,
+  image,
+  bestDate,
+}: itemProps) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const handleNavigation = () => {
+    console.log("Go to Detail Component");
     navigation.navigate("Detail", {
+      id,
       title,
       price,
       sell,
       description,
       image,
+      bestDate,
     });
   };
 
@@ -105,7 +123,7 @@ const Item = ({ title, price, sell, description, image }: itemProps) => {
       <View style={styles.itemImageContainer}>
         <Image
           source={{
-            uri: "https://th.bing.com/th/id/OIP.vR2S1x2hcfpgN5tTiADk1gHaE7?rs=1&pid=ImgDetMain",
+            uri: image,
           }}
           style={styles.itemImage}
         />
@@ -149,11 +167,14 @@ const Items = () => {
         <View style={styles.contentContainer}>
           {data["archetypal-food"].map((item) => (
             <Item
-              title={item.name}
+              id={item.id}
+              title={item.title}
               description={item.description}
               sell={item.sell}
               price={item.price}
-              image="https://th.bing.com/th/id/OIP.vR2S1x2hcfpgN5tTiADk1gHaE7?rs=1&pid=ImgDetMain"
+              image={item.image}
+              bestDate={item.bestDate}
+              key={item.id}
             />
           ))}
         </View>

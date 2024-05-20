@@ -10,7 +10,7 @@ import UserSetting from "./Admin/UserSetting/UserSetting";
 import CustomerHome from "./Customer/CustomerHome/CustomerHome";
 
 import { NavigationContainer } from "@react-navigation/native";
-import { TabBarIcon } from "@/components/Themed";
+import { TabBarIcon, Text } from "@/components/Themed";
 
 const Tab = createBottomTabNavigator();
 
@@ -22,62 +22,66 @@ const TabLayout = () => {
     setIsAdmin(false);
   }, []);
 
-  return (
-    <NavigationContainer independent={true}>
-      <Tab.Navigator screenOptions={{ headerShown: false }}>
-        <Tab.Screen
-          name="index"
-          component={isAdmin ? AdminHome : CustomerHome}
-          options={{
-            title: "Home",
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="home-outline" color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="order"
-          component={OrderList}
-          options={{
-            title: "Order Info",
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="receipt" color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="new"
-          component={NewProduct}
-          options={{
-            title: "New Product",
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="add-circle-outline" color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="analysis"
-          component={Analysis}
-          options={{
-            title: "Analysis",
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="analytics-outline" color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="admin"
-          component={UserSetting}
-          options={{
-            title: "Admin",
-            tabBarIcon: ({ color }) => (
-              <TabBarIcon name="person" color={color} />
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
-  );
+  if (false) {
+    return <Text style={{ fontSize: 33 }}>123</Text>;
+  } else {
+    return (
+      <NavigationContainer independent={true}>
+        <Tab.Navigator screenOptions={{ headerShown: false }}>
+          <Tab.Screen
+            name="index"
+            component={isAdmin ? AdminHome : CustomerHome}
+            options={{
+              title: "Home",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="home-outline" color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="order"
+            component={OrderList}
+            options={{
+              title: "Order Info",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="receipt" color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="new"
+            component={NewProduct}
+            options={{
+              title: "New Product",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="add-circle-outline" color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="analysis"
+            component={Analysis}
+            options={{
+              title: "Analysis",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="analytics-outline" color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="admin"
+            component={UserSetting}
+            options={{
+              title: "Admin",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="person" color={color} />
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+    );
+  }
 };
 
 export default TabLayout;
