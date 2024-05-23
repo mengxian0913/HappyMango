@@ -1,4 +1,4 @@
-import { Image, ImageSourcePropType, TextInput } from 'react-native';
+import { Image, ImageSourcePropType, TextInput, TouchableOpacity } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
@@ -145,29 +145,107 @@ const DetailsScreen = (props: any) => {
             <Text style={styles.cardSubTitle}>Mango Smoothie Milk Cap</Text>
             <View style={styles.imageCardBottom}>
               <TabBarIcon name="star" size={20} color={'#FFD52D'} />
-              <Text style={{paddingLeft: 10}}>4.5 (15則評價)</Text>
+              <Text
+                onPress={() => navigation.navigate({name: 'CommentDetails', params: {...item}} as never)}
+                style={{paddingLeft: 10}}
+               >
+                  4.5 (15則評價)
+                </Text>
             </View>
           </View>
         </>
       }
       middleLayer={
-        <View style={[styles.mainCard, {width: '100%', marginLeft: 0}]}>
-          {data.map((pair) => (
-            <View style={[styles.tableColumn, {height: pair.key !== '商品說明' ? 40 : 100}]}>
-              <Text style={styles.tableKey}>{pair.key}</Text>
-              <TextInput
-                style={{
-                  marginLeft: 10,
-                  padding: 16,
-                  backgroundColor: '#F1F1F1',
-                  height: '100%',
-                }}
-                placeholder={pair.placeholder}
-              />
+        <>
+          <View style={[styles.mainCard, {width: '100%', marginLeft: 0}]}>
+            {data.map((pair) => (
+              <View style={[styles.tableColumn, {height: pair.key !== '商品說明' ? 40 : 100}]}>
+                <Text style={styles.tableKey}>{pair.key}</Text>
+                <TextInput
+                  style={{
+                    marginLeft: 10,
+                    padding: 16,
+                    backgroundColor: '#F1F1F1',
+                    height: '100%',
+                  }}
+                  placeholder={pair.placeholder}
+                />
+              </View>
+            ))}
+            <View style={styles.divideLine}></View>
+          </View>
+          <Text style={styles.smallText}>完成請滑至底部</Text>
+          <TouchableOpacity style={styles.clickButton}>
+            <Text style={{fontSize: 20, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>更改此商品</Text>
+          </TouchableOpacity>
+        </>
+      }
+    />
+  )
+}
+
+const CommentDetailsScreen = (props: any) => {
+  const item = props.route.params;
+  const navigation = useNavigation();
+  return (
+    <AdminTemplate
+      topLayer={
+        <>
+          <View style={styles.back}>
+            <TabBarIcon
+              name="arrow-back" size={32} color={'#000'}
+            />
+            <Text
+              style={{fontSize: 20, fontWeight: 'bold', marginLeft: 10}}
+              onPress={() => navigation.navigate('Home' as never)}
+            >回到首頁</Text>
+          </View>
+          <Image
+            source={item.img}
+            style={styles.imageContainer}
+          />
+          <TabBarIcon style={styles.imageCardChangeIcon} name="add-circle-sharp" size={32} color={'#FFF'} />
+          <View style={styles.imageCard}>
+            <Text style={[styles.cardTitle, {marginBottom: 0}]}>{item.name}</Text>
+            <Text style={styles.cardSubTitle}>Mango Smoothie Milk Cap</Text>
+            <View style={styles.imageCardBottom}>
+              <Text
+                onPress={() => navigation.navigate({name: 'Details', params: {...item}} as never)}
+                style={{paddingLeft: 10}}>詳細商品資訊</Text>
             </View>
-          ))}
-          <View style={styles.divideLine}></View>
-        </View>
+          </View>
+        </>
+      }
+      middleLayer={
+        <>
+          <Text>顧客評論</Text>
+          <View style={[styles.mainCard, {width: '100%', marginLeft: 0, borderCurve: 'circular', padding: 10}]}>
+            <Text>顧客名稱：Martin Lin</Text>
+            <View style={{flexDirection: 'row'}}>
+              <Text>商品名稱：4.2</Text>
+              <Text>送貨品質：4.5</Text>
+              <TabBarIcon name="star" size={20} color={'#FFD52D'} />
+            </View>
+            <View style={{backgroundColor: '#F1F1F1', padding: 10}}>
+              <Text>
+                芒果冰沙奶蓋是夏日的最佳解暑選擇，融合了清新的芒果口味和滑順的奶油口感，絕對能讓您在炎炎夏日中獲得滿滿的幸福感。每一口都充滿了芒果的天然風味，搭配著綿密細緻的奶油蓋，讓您的味蕾享受一場極致的美味饗宴。不僅如此，芒果更富含維生素C和纖維，是健康又美味的選擇。無論是與好友聚會還是獨自一人，芒果冰沙奶蓋都能為您帶來一份清涼的快樂時光。
+              </Text>
+            </View>
+          </View>
+          <View style={[styles.mainCard, {width: '100%', marginLeft: 0, borderCurve: 'circular', padding: 10}]}>
+            <Text>顧客名稱：Martin Lin</Text>
+            <View style={{flexDirection: 'row'}}>
+              <Text>商品名稱：4.2</Text>
+              <Text>送貨品質：4.5</Text>
+              <TabBarIcon name="star" size={20} color={'#FFD52D'} />
+            </View>
+            <View style={{backgroundColor: '#F1F1F1', padding: 10}}>
+              <Text>
+                芒果冰沙奶蓋是夏日的最佳解暑選擇，融合了清新的芒果口味和滑順的奶油口感，絕對能讓您在炎炎夏日中獲得滿滿的幸福感。每一口都充滿了芒果的天然風味，搭配著綿密細緻的奶油蓋，讓您的味蕾享受一場極致的美味饗宴。不僅如此，芒果更富含維生素C和纖維，是健康又美味的選擇。無論是與好友聚會還是獨自一人，芒果冰沙奶蓋都能為您帶來一份清涼的快樂時光。
+              </Text>
+            </View>
+          </View>
+        </>
       }
     />
   )
@@ -179,6 +257,7 @@ export default function HomeStackScreen() {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="Home" component={TabHomeScreen} />
       <HomeStack.Screen name="Details" component={DetailsScreen} />
+      <HomeStack.Screen name="CommentDetails" component={CommentDetailsScreen} />
     </HomeStack.Navigator>
   );
 };

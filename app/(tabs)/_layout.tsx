@@ -63,3 +63,5 @@ function TabLayout() {
     </NavigationContainer>
   )
 }
+
+export default TabLayout;

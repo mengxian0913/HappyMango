@@ -1,3 +1,4 @@
+import { Flex } from "native-base";
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
@@ -86,15 +87,17 @@ const styles = StyleSheet.create({
         borderBottomColor: '#D8CEBD',
     },
     tableKey: {
-        width: 'auto',
-        fontSize: 20,
-        fontWeight: 'bold',
+        width: '50%',
+    },
+    tableValue: {
+        width: '50%',
+        alignItems: 'flex-end',
     },
     divideLine: {
         position: 'absolute',
         left: 110,
         width: 1,
-        height: '90%',
+        height: '100%',
         backgroundColor: '#000'
     },
     imageCardChangeIcon: {
@@ -118,6 +121,26 @@ const styles = StyleSheet.create({
         height: 40,
         width: '100%',
         backgroundColor: '#EC9039',
+    },
+    tabLabel: {
+        top: 0,
+        width: 20,
+        height: 20,
+        textAlign: 'center',
+        position: 'absolute',
+        borderRadius: 20,
+        backgroundColor: 'red',
+        color: '#FFF',
+        zIndex: 2
+    },
+    orderTitle: {
+        fontSize: 18,
+        padding: 5,
+        paddingLeft: 10,
+        fontWeight: 'bold',
+        backgroundColor: '#FFD52D',
+        height: 30,
+        width: 150
     }
 });
 

@@ -123,6 +123,20 @@ const styles = StyleSheet.create({
         marginTop: 60,
         marginLeft: 20,
         flexDirection: 'row'
+    },
+    smallText: {
+        fontSize: 15,
+        textAlign: 'center',
+        width: '100%'
+    },
+    clickButton: {
+        marginTop: 200,
+        marginBottom: 10,
+        borderRadius: 15,
+        justifyContent: 'center',
+        height: 40,
+        width: '100%',
+        backgroundColor: '#EC9039',
     }
   });
 

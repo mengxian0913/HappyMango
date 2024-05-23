@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
       width: 'auto',
       fontSize: 20,
       fontWeight: 'bold',
+      paddingRight: 10
     },
     divideLine: {
       position: 'absolute',
