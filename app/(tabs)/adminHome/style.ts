@@ -129,7 +129,17 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         width: '100%'
     },
-    clickButton: {
+    pressInButton: {
+        marginTop: 200,
+        marginBottom: 10,
+        borderRadius: 15,
+        justifyContent: 'center',
+        height: 40,
+        width: '100%',
+        backgroundColor: '#EC9039',
+        opacity: .5
+    },
+    pressOutButton: {
         marginTop: 200,
         marginBottom: 10,
         borderRadius: 15,

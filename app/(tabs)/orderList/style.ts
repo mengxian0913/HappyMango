@@ -1,4 +1,3 @@
-import { Flex } from "native-base";
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
@@ -48,7 +47,7 @@ const styles = StyleSheet.create({
     navigatorTab: {
         width: '33%',
         padding: 5,
-        textAlignVertical: 'center',
+        verticalAlign: 'middle',
         fontWeight: 'bold',
         borderRadius: 30
     },

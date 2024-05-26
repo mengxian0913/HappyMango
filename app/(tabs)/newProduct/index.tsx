@@ -1,11 +1,10 @@
-import { TextInput, TouchableOpacity, Image } from 'react-native';
+import { TextInput, Pressable, Image } from 'react-native';
 import React, { useState } from 'react';
 import axios from 'axios';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { Select } from "native-base";
 
 import AdminTemplate from '@/components/AdminTemplate';
-import { Text, View } from '@/components/Themed';
+import { Text, View, TableCoulumn_TextInput, TableColumn_SelectInput } from '@/components/Themed';
 import styles from "./style";
 
 export default function TabNewScreen() {
@@ -17,6 +16,7 @@ export default function TabNewScreen() {
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [imageData, setImageData] = useState<string | null>(null);
+  const [pressed, setPressed] = useState(false);
   const [typeSelectOpen, setTypeSelectOpen] = useState(false);
   const [typeItems, setTypeItems] = useState([
     {label: '農產', value: '農產'},
@@ -81,19 +81,16 @@ export default function TabNewScreen() {
 
   const handleSubmit = () => {
     if(validateForm()){
-
-      axios.post('http://localhost:3000/add_new_product', 
-        {name, description, rowPrice, sellPrice, date, type, count}, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(response => {
+      const [year, month, day] = date.split("/");
+      axios.post('http://localhost:3000/add_new_product', {
+          name, description, rowPrice, sellPrice, type, count, picture: "", year, month, day
+        })
+        .then(response => {
           console.log('Success:', response.data);
-      })
-      .catch(error => {
+        })
+        .catch(error => {
           console.error('Error:', error);
-      });
+        });
 
       setName("");
       setRowPrice("");
@@ -120,96 +117,13 @@ export default function TabNewScreen() {
             }
           </View>
           <View style={styles.mainCard}>
-            <View style={[styles.tableColumn, {height: 40}]}>
-                  <Text style={styles.tableKey}>商品名稱</Text>
-                  <TextInput
-                    style={{
-                      marginLeft: 10,
-                      padding: 16,
-                      backgroundColor: '#F1F1F1',
-                      height: '100%',
-                    }}
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="商品名稱"
-                  />
-                </View>
-              <View style={[styles.tableColumn, {height: 100}]}>
-                <Text style={styles.tableKey}>商品說明</Text>
-                <TextInput
-                  style={{
-                    marginLeft: 10,
-                    padding: 16,
-                    backgroundColor: '#F1F1F1',
-                    height: '100%',
-                  }}
-                  value={description}
-                  onChangeText={setDescription}
-                  placeholder="商品說明"
-                />
-              </View>
-              <View style={[styles.tableColumn, {height: 40}]}>
-                <Text style={styles.tableKey}>原始價格</Text>
-                <TextInput
-                  style={{
-                    marginLeft: 10,
-                    padding: 16,
-                    backgroundColor: '#F1F1F1',
-                    height: '100%',
-                  }}
-                  value={rowPrice}
-                  onChangeText={setRowPrice}
-                  placeholder="原始價格"
-                />
-              </View>
-              <View style={[styles.tableColumn, {height: 40}]}>
-              <Text style={styles.tableKey}>售出價格</Text>
-              <TextInput
-                style={{
-                  marginLeft: 10,
-                  padding: 16,
-                  backgroundColor: '#F1F1F1',
-                  height: '100%',
-                }}
-                value={sellPrice}
-                onChangeText={setSellPrice}
-                placeholder="售出價格"
-              />
-            </View>
-            <View style={[styles.tableColumn, {height: 40}]}>
-                <Text style={styles.tableKey}>商品類型</Text>
-                <View>
-                 
-                </View>
-              </View>
-              <View style={[styles.tableColumn, {height: 40}]}>
-                <Text style={styles.tableKey}>庫存數量</Text>
-                <TextInput
-                  style={{
-                    marginLeft: 10,
-                    padding: 16,
-                    backgroundColor: '#F1F1F1',
-                    height: '100%',
-                  }}
-                  value={count}
-                  onChangeText={setCount}
-                  placeholder="庫存數量"
-                />
-              </View>
-              <View style={[styles.tableColumn, {height: 40}]}>
-                <Text style={styles.tableKey}>有效期限</Text>
-                <TextInput
-                  style={{
-                    marginLeft: 10,
-                    padding: 16,
-                    backgroundColor: '#F1F1F1',
-                    height: '100%',
-                  }}
-                  value={date}
-                  onChangeText={setDate}
-                  placeholder="有效期限"
-                />
-              </View>
+            <TableCoulumn_TextInput name="商品名稱" placeholder="商品名稱" onChange={setName} value={name}/>
+            <TableCoulumn_TextInput name="商品說明" placeholder="商品說明" onChange={setDescription} value={description}/>
+            <TableCoulumn_TextInput name="原始價格" placeholder="原始價格" onChange={setRowPrice} value={rowPrice}/>
+            <TableCoulumn_TextInput name="售出價格" placeholder="售出價格" onChange={setSellPrice} value={sellPrice}/>
+            <TableCoulumn_TextInput name="庫存數量" placeholder="庫存數量" onChange={setCount} value={count}/>
+            <TableCoulumn_TextInput name="有效期限" placeholder="有效期限" onChange={setDate} value={date}/>
+            <TableColumn_SelectInput name="商品類型" selectItems={[{label: '農產品', 'value': '農產品'}, {label: '精緻商品', value: '精緻商品'}]} chooseItem={type} setChooseItem={setType} />
             <View style={styles.divideLine}></View>
           </View>
         </>
@@ -217,9 +131,9 @@ export default function TabNewScreen() {
       middleLayer={
         <>
           <Text style={styles.smallText}>完成請滑至底部</Text>
-          <TouchableOpacity onPress={handleSubmit} style={styles.clickButton}>
-            <Text style={{fontSize: 20, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>新增此商品</Text>
-          </TouchableOpacity>
+          <Pressable onPress={handleSubmit} style={pressed ? styles.pressOutButton : styles.pressInButton}>
+            <Text style={{fontSize: 20, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>{pressed ? "此商品成功送出" : "新增此商品"}</Text>
+          </Pressable>
         </>
       }
     />

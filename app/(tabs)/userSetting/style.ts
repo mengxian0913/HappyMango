@@ -39,6 +39,28 @@ const styles = StyleSheet.create({
         height: '90%',
         backgroundColor: '#000'
     },
+    smallText: {
+        fontSize: 15,
+        textAlign: 'center',
+        width: '100%'
+    },
+    pressInButton: {
+        marginBottom: 10,
+        borderRadius: 15,
+        justifyContent: 'center',
+        height: 40,
+        width: '100%',
+        backgroundColor: '#EC9039',
+    },
+    pressOutButton: {
+        marginBottom: 10,
+        borderRadius: 15,
+        justifyContent: 'center',
+        height: 40,
+        width: '100%',
+        backgroundColor: '#EC9039',
+        opacity: .5
+    }
 });
 
 export default styles;

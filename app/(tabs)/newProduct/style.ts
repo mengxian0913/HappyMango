@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
       height: '90%',
       backgroundColor: '#000'
     },
-    clickButton: {
+    pressInButton: {
       marginTop: 200,
       marginBottom: 10,
       borderRadius: 15,
@@ -62,6 +62,16 @@ const styles = StyleSheet.create({
       height: 40,
       width: '100%',
       backgroundColor: '#EC9039',
+    },
+    pressOutButton: {
+      marginTop: 200,
+      marginBottom: 10,
+      borderRadius: 15,
+      justifyContent: 'center',
+      height: 40,
+      width: '100%',
+      backgroundColor: '#EC9039',
+      opacity: .5
     }
   });
 
