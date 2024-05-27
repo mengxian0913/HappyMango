@@ -1,4 +1,5 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+
 import {
   DarkTheme,
   DefaultTheme,
@@ -51,11 +52,13 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
+    // <PanGestureHandler>
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack initialRouteName="(tabs)">
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
     </ThemeProvider>
+    // </PanGestureHandler>
   );
 }

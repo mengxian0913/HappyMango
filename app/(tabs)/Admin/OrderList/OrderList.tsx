@@ -213,7 +213,7 @@ const OrderStack = createNativeStackNavigator();
 
 const OrderList = () => {
   return (
-    <OrderStack.Navigator screenOptions={{ headerShown: true }}>
+    <OrderStack.Navigator screenOptions={{ headerShown: false }}>
       <OrderStack.Screen name="Order" component={OrderScreen} />
       <OrderStack.Screen name="Details" component={DetailsScreen} />
     </OrderStack.Navigator>

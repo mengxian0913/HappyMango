@@ -6,20 +6,24 @@ import Analysis from "./Admin/Analysis/Analysis";
 import NewProduct from "./Admin/NewProduct/NewProduct";
 import OrderList from "./Admin/OrderList/OrderList";
 import UserSetting from "./Admin/UserSetting/UserSetting";
+
 /* Customer */
 import CustomerHome from "./Customer/CustomerHome/CustomerHome";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { TabBarIcon, Text } from "@/components/Themed";
+import CustomerUser from "./Customer/CustomerUser/CustomerUser";
 
 const Tab = createBottomTabNavigator();
 
 const TabLayout = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isLogin, setIsLogin] = useState<boolean>(true);
 
   useEffect(() => {
     // check is admin //
     setIsAdmin(false);
+    setIsLogin(true);
   }, []);
 
   if (false) {
@@ -69,10 +73,10 @@ const TabLayout = () => {
             }}
           />
           <Tab.Screen
-            name="admin"
-            component={UserSetting}
+            name="setting"
+            component={isLogin ? CustomerUser : UserSetting}
             options={{
-              title: "Admin",
+              title: "setting",
               tabBarIcon: ({ color }) => (
                 <TabBarIcon name="person" color={color} />
               ),

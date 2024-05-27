@@ -92,8 +92,6 @@ type RootStackParamList = {
   };
 };
 
-export const ItemContext = createContext<itemProps | null>(null);
-
 const Item = ({
   id,
   title,
@@ -165,7 +163,7 @@ const Items = () => {
       </SafeAreaView>
       <ScrollView>
         <View style={styles.contentContainer}>
-          {data["archetypal-food"].map((item) => (
+          {data["archetypal-food"].map((item, index) => (
             <Item
               id={item.id}
               title={item.title}
@@ -174,7 +172,7 @@ const Items = () => {
               price={item.price}
               image={item.image}
               bestDate={item.bestDate}
-              key={item.id}
+              key={index}
             />
           ))}
         </View>
