@@ -140,7 +140,22 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFD52D',
         height: 30,
         width: 150
-    }
+    },
+
+    cancelContainer: {
+        width: '100%',
+        height: 'auto',
+        backgroundColor: 'none'
+    },
+    cancelButton: {
+        marginVertical: 10,
+        borderRadius: 15,
+        justifyContent: 'center',
+        height: 30,
+        width: 100,
+        marginLeft: 'auto',
+        backgroundColor: '#FC2F00',
+    },
 });
 
 export default styles;

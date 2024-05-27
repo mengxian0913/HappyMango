@@ -4,6 +4,7 @@ import AdminTemplate from '@/components/AdminTemplate';
 import { Text, View, TableCoulumn_TextInput } from '@/components/Themed';
 import styles from './style';
 import axios from 'axios';
+import { API_URL } from "@env";
 
 export default function TabAdminScreen() {
   const [name, setName] = useState("");
@@ -14,7 +15,7 @@ export default function TabAdminScreen() {
   const [id, setId] = useState("");
 
   const handleSubmit = () => {
-    axios.post('http://localhost:3000/update_seller', {
+    axios.post(`${API_URL}/update_seller`, {
       id, name, description, phone, address
     })
       .then(response => {
@@ -26,7 +27,7 @@ export default function TabAdminScreen() {
   }
 
   useEffect(() => {
-    axios.get('http://localhost:3000/get_seller', {
+    axios.get(`${API_URL}/get_seller`, {
       })
         .then(response => {
           const seller = response.data[0];

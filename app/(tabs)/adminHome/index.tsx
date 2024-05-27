@@ -4,10 +4,10 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './style';
+import { API_URL } from "@env";
 
 import { Text, View, TabBarIcon, TableColumn_SelectInput, TableCoulumn_TextInput } from '@/components/Themed';
 import AdminTemplate from '@/components/AdminTemplate';
-import { useFocus } from 'native-base/lib/typescript/components/primitives';
 
 interface dataType{
   id: string,
@@ -49,8 +49,7 @@ const TabHomeScreen = () => {
   const [overview, setOverview] = useState<overViewType>();
 
   useEffect(() => {
-    console.log('test');
-    axios.get('http://localhost:3000/get_product')
+    axios.get(`${API_URL}/get_product`)
     .then(response => {
       setData(rebuildListData(response.data));
     })
@@ -58,7 +57,7 @@ const TabHomeScreen = () => {
       console.error('Error:', error);
     }); 
     
-    axios.get('http://localhost:3000/get_seller_overview')
+    axios.get(`${API_URL}/get_seller_overview`)
       .then(response => {
         setOverview(response.data[0]);
       })
@@ -145,11 +144,12 @@ const DetailsScreen = (props: any) => {
   const [showComment, setShowComment] = useState(false);
   const [comments, setComments] = useState<commentType[] | null>(null);
   const [pressToUpdate, setPressToUpdate] = useState(false);
+  const [pressToDelete, setPressToDelete] = useState(false);
 
   const handleUpateProduct = () => {
     const [year, month, day] = ondate.split('/');
-    axios.post("http://localhost:3000/update_product", {
-        id: item.name,
+    axios.post(`${API_URL}/update_product`, {
+        id: item.id,
         name, type, description, rowPrice, sellPrice, count, year, month, day
     })
       .then(response => {
@@ -160,9 +160,21 @@ const DetailsScreen = (props: any) => {
       })
   }
 
+  const handleDeleteProduct = () => {
+    axios.post(`${API_URL}/delete_product`,{
+      id: item.id
+    })
+      .then(res => {
+        navigation.navigate('Home' as never);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+  }
+
   useEffect(() => {
     if(showComment){
-      axios.get('http://localhost:3000/get_product_evaluation', {
+      axios.get(`${API_URL}/get_product_evaluation`, {
         params: {
           name: name
         }
@@ -224,7 +236,7 @@ const DetailsScreen = (props: any) => {
         <>
           <View style={[styles.mainCard, {width: '100%', marginLeft: 0}]}>
             <TableCoulumn_TextInput value={name} name='商品名稱' placeholder='商品名稱' onChange={setName}/>
-            <TableColumn_SelectInput chooseItem={type} selectItems={[{label: '蔬菜', value: 'vegetable'}, {label: '精緻商品', value: 'processed'}, {label: '水果', value: 'fruit'}, {label: '穀類', value: 'grain'}]} name='商品類型' setChooseItem={setType}/>
+            <TableColumn_SelectInput chooseItem={type} selectItems={[{label: '精緻商品', value: 'processed'}, {label: '農產品', value: 'whole'}]} name='商品類型' setChooseItem={setType}/>
             <TableCoulumn_TextInput value={description} name='商品說明' placeholder='商品說明' onChange={setDescription}/>
             <TableCoulumn_TextInput value={rowPrice} name='原始價格' placeholder='原始價格' onChange={setRowPrice}/>
             <TableCoulumn_TextInput value={sellPrice} name='售出價格' placeholder='售出價格' onChange={setSellPrice}/>
@@ -241,6 +253,16 @@ const DetailsScreen = (props: any) => {
           >
             <Text style={{fontSize: 20, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>
               {pressToUpdate ? "此商品成功更改" : "更改此商品"}
+            </Text>
+          </Pressable>
+          <Pressable 
+            onPress={() => handleDeleteProduct()}
+            onPressIn={() => setPressToDelete(true)}
+            onPressOut={() => setPressToDelete(false)}
+            style={(pressToDelete ? styles.pressInDeleteButton : styles.pressOutDeleteButton)}
+          >
+            <Text style={{fontSize: 20, fontWeight: '700', color: '#FFBC0A', textAlign: 'center'}}>
+              {pressToDelete ? "此商品成功刪除" : "刪除此商品"}
             </Text>
           </Pressable>
         </>

@@ -147,6 +147,23 @@ const styles = StyleSheet.create({
         height: 40,
         width: '100%',
         backgroundColor: '#EC9039',
+    },
+    pressInDeleteButton: {
+        marginBottom: 10,
+        borderRadius: 15,
+        justifyContent: 'center',
+        height: 40,
+        width: '100%',
+        backgroundColor: '#FC2F00',
+        opacity: .5
+    },
+    pressOutDeleteButton: {
+        marginBottom: 10,
+        borderRadius: 15,
+        justifyContent: 'center',
+        height: 40,
+        width: '100%',
+        backgroundColor: '#FC2F00',
     }
   });
 

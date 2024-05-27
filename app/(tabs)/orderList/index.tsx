@@ -2,11 +2,13 @@ import { Pressable } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { TextInput } from '@/components/Themed';
 import styles from './style';
 import axios from 'axios';
 
 import AdminTemplate from '@/components/AdminTemplate';
 import { Text, View, TabBarIcon } from '@/components/Themed';
+import { API_URL } from "@env";
 
 interface dataType{
   id: string,
@@ -64,7 +66,7 @@ const OrderScreen = () => {
   const [latest_order, setLatestOrder] = useState<dataType| null>(null);
 
   useEffect(() => {
-    axios.get<AllorderType>('http://localhost:3000/get_all_order')
+    axios.get<AllorderType>(`${API_URL}/get_all_order`)
     .then(response => {
       all_order_data.current = response.data;
       setData(rebuildOrderData(all_order_data.current.onprogress));
@@ -166,22 +168,26 @@ const DetailsScreen = (props: any) => {
   const item = props.route.params;
   const navigation = useNavigation();
   const [order, setOrder] = useState<orderDetailsType | null>(null);
+  const [cancelFactor, setCancelFactor] = useState("");
 
   useEffect(() => {
-    axios.get('http://localhost:3000/get_specific_order', {
+    axios.get(`${API_URL}/get_specific_order`, {
       params: {
         id: item.id
       }
     })
       .then(response => {
-        const prducts: productType = {
-          product_name: response.data[0].product_name,
-          product_price: response.data[0].product_price,
-          product_count: response.data[0].product_count
+        const products: productType[] = []
+        for(let i = 0; i < response.data.length; i++){
+          products.push({
+            product_name: response.data[i].product_name,
+            product_price: response.data[i].product_price,
+            product_count: response.data[i].product_count
+          })
         }
         setOrder({
           ...response.data[0],
-          content: [prducts]
+          content: products
         });
       })
       .catch(error => {
@@ -267,6 +273,13 @@ const DetailsScreen = (props: any) => {
           <Pressable style={styles.clickButton}>
             <Text style={{fontSize: 20, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>確認訂單</Text>
           </Pressable>
+          <View style={styles.cancelContainer}>
+            <Text style={{marginBottom: 10}}>拒絕訂單</Text>
+            <TextInput style={{height: 100, backgroundColor: '#FFF'}} placeholder='拒絕原因' value={cancelFactor} onChange={setCancelFactor} />
+            <Pressable style={styles.cancelButton}>
+              <Text style={{fontSize: 15, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>送出拒絕</Text>
+            </Pressable>
+          </View>
         </>
       }
     />

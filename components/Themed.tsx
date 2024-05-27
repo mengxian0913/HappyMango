@@ -54,11 +54,12 @@ export function TabBarIcon(props: {
 export function TextInput(props: {
   placeholder: string,
   value: string,
-  onChange: React.Dispatch<React.SetStateAction<string>>
+  onChange: React.Dispatch<React.SetStateAction<string>>,
+  style?: object
 }) {
     return(
       <Box alignItems="center">
-        <Input onChangeText={props.onChange} value={props.value} mx="3" placeholder={props.placeholder} w="100%" />
+        <Input style={props.style} onChangeText={props.onChange} value={props.value} mx="3" placeholder={props.placeholder} w="100%" />
       </Box>
     );
 }

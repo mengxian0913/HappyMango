@@ -1,4 +1,4 @@
-import { TextInput, Pressable, Image } from 'react-native';
+import { Pressable, Image } from 'react-native';
 import React, { useState } from 'react';
 import axios from 'axios';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -6,6 +6,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import AdminTemplate from '@/components/AdminTemplate';
 import { Text, View, TableCoulumn_TextInput, TableColumn_SelectInput } from '@/components/Themed';
 import styles from "./style";
+import { API_URL } from "@env";
 
 export default function TabNewScreen() {
   const [name, setName] = useState("");
@@ -56,7 +57,7 @@ export default function TabNewScreen() {
       const blob = new Blob([params.uri], { type: params.type });
       formData.append('file', blob, params.fileName);
       try {
-        const response = await axios.post('http://localhost:3000/upload_product_image', formData, {
+        const response = await axios.post(`${API_URL}/upload_product_image`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -82,7 +83,7 @@ export default function TabNewScreen() {
   const handleSubmit = () => {
     if(validateForm()){
       const [year, month, day] = date.split("/");
-      axios.post('http://localhost:3000/add_new_product', {
+      axios.post(`${API_URL}/add_new_product`, {
           name, description, rowPrice, sellPrice, type, count, picture: "", year, month, day
         })
         .then(response => {
@@ -123,7 +124,7 @@ export default function TabNewScreen() {
             <TableCoulumn_TextInput name="售出價格" placeholder="售出價格" onChange={setSellPrice} value={sellPrice}/>
             <TableCoulumn_TextInput name="庫存數量" placeholder="庫存數量" onChange={setCount} value={count}/>
             <TableCoulumn_TextInput name="有效期限" placeholder="有效期限" onChange={setDate} value={date}/>
-            <TableColumn_SelectInput name="商品類型" selectItems={[{label: '農產品', 'value': '農產品'}, {label: '精緻商品', value: '精緻商品'}]} chooseItem={type} setChooseItem={setType} />
+            <TableColumn_SelectInput name="商品類型" selectItems={[{label: '農產品', 'value': 'whole'}, {label: '精緻商品', value: 'processed'}]} chooseItem={type} setChooseItem={setType} />
             <View style={styles.divideLine}></View>
           </View>
         </>
