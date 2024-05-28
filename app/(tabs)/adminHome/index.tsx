@@ -2,6 +2,7 @@ import { Image, ImageSourcePropType, Pressable } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
+import { launchImageLibrary } from 'react-native-image-picker';
 import axios from 'axios';
 import styles from './style';
 import { API_URL } from "@env";
@@ -13,7 +14,7 @@ interface dataType{
   id: string,
   type: string,
   name: string,
-  img: ImageSourcePropType
+  img: ImageSourcePropType,
   key: Number,
 }
 
@@ -32,11 +33,11 @@ const rebuildListData = (listData: dataType[]) => {
   const newData: { [key: string]: dataType[] } = {};
   for (let data of listData) {
     if (data.type in newData){
-      data.img = require('../../../assets/images/002.png');
+      if(data.img as string == "") data.img = require('../../../assets/images/000.jpg');
       newData[data.type].push(data);
     } 
     else {
-      data.img = require('../../../assets/images/001.png');
+      if(data.img as string == "") data.img = require('../../../assets/images/000.jpg');
       newData[data.type] = [data];
     }
   }
@@ -81,9 +82,9 @@ const TabHomeScreen = () => {
       }
       middleLayer={
         <>
-        {Object.keys(data).map((type, index) => (
-          <MerchandiseTypeView key={type} type={type} data={data} />
-        ))}
+          {Object.keys(data).map((type, index) => (
+            <MerchandiseTypeView key={type} type={type} data={data} />
+          ))}
         </>
       }
     />
@@ -140,19 +141,32 @@ const DetailsScreen = (props: any) => {
   const [rowPrice, setRowPrice] = useState(item.rowPrice);
   const [sellPrice, setSellPrice] = useState(item.sellPrice);
   const [count, setCount] = useState(item.count);
-  const [ondate, setOndate] = useState(item.date);
+  const [date, setDate] = useState(item.date);
+  const [imageData, setImageData] = useState(item.img);
+  const [imageType, setImageType] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
+  const [evaluationCount, setEvaluationCount] = useState(0);
   const [showComment, setShowComment] = useState(false);
   const [comments, setComments] = useState<commentType[] | null>(null);
   const [pressToUpdate, setPressToUpdate] = useState(false);
   const [pressToDelete, setPressToDelete] = useState(false);
 
-  const handleUpateProduct = () => {
-    const [year, month, day] = ondate.split('/');
+  const handleUpateProduct = async () => {
+    const [year, month, day] = date.split('/');
+    let imagePath = "";
+    if(!imageType) imagePath = imageData.substring(imageData.lastIndexOf('/') + 1, imageData.indexOf('.jpg'));
+    else imagePath = await uploadImage({
+      uri: imageData as string,
+      type: imageType,
+      fileName: imageData?.split('/').pop() as string
+    })
+    console.log(imagePath);
+
     axios.post(`${API_URL}/update_product`, {
         id: item.id,
-        name, type, description, rowPrice, sellPrice, count, year, month, day
+        name, type, description, rowPrice, sellPrice, count, year, month, day, imagePath
     })
-      .then(response => {
+      .then(res => {
         navigation.navigate('Home' as never);
       })
       .catch(err => {
@@ -172,6 +186,46 @@ const DetailsScreen = (props: any) => {
       })
   }
 
+  const handleChangePicture = () => {
+    launchImageLibrary({
+      mediaType: 'photo',
+      maxWidth: 1000,
+      maxHeight: 1000,
+      quality: 0.8
+  }, res=>{
+      if(res.didCancel){
+          return false;
+      }
+      if(res.assets !== undefined){
+        setImageData(res.assets[0].uri as string);
+        setImageType(res.assets[0].type as string);
+      }
+    })
+  }
+
+  interface ImagePropsType {
+    uri: string,
+    type: string,
+    fileName: string
+  }
+
+  const uploadImage = async (params: ImagePropsType) => {
+    const formData = new FormData();
+    const blob = new Blob([params.uri], { type: params.type });
+    formData.append('file', blob, params.fileName);
+    try {
+      const response = await axios.post(`${API_URL}/upload_product_image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
+  }
+
   useEffect(() => {
     if(showComment){
       axios.get(`${API_URL}/get_product_evaluation`, {
@@ -185,6 +239,17 @@ const DetailsScreen = (props: any) => {
         .catch(error => {
             console.error('Error:', error);
         })    
+    }else{
+      axios.get(`${API_URL}/get_specific_product`, {
+        params: {
+          id: item.id
+        }
+      })
+        .then(response => {
+          const data = response.data[0];
+          setScore(data.score);
+          setEvaluationCount(data.count);
+        })
     }
   }, [showComment])
 
@@ -205,22 +270,30 @@ const DetailsScreen = (props: any) => {
             >回到首頁</Text>
           </View>
           <Image
-            source={item.img}
+            source={imageData}
             style={styles.imageContainer}
           />
-          <TabBarIcon style={styles.imageCardChangeIcon} name="add-circle-sharp" size={32} color={'#FFF'} />
+          <Pressable style={styles.imageCardChangeIcon} onPress={() => handleChangePicture()}>
+            <TabBarIcon 
+              name="add-circle-sharp"
+              size={32}
+              color={'#FFF'}
+            />
+          </Pressable>
           <View style={styles.imageCard}>
             <Text style={[styles.cardTitle, {marginBottom: 0}]}>{item.name}</Text>
             <Text style={styles.cardSubTitle}>Mango Smoothie Milk Cap</Text>
-            <View style={styles.imageCardBottom}>
+            <Pressable
+              style={styles.imageCardBottom}
+              onPress={() => evaluationCount !== 0 && setShowComment(!showComment) }
+            >
               <TabBarIcon name="star" size={20} color={'#FFD52D'} />
               <Text
-                onPress={() => setShowComment(!showComment)}
                 style={{paddingLeft: 10}}
                >
-                  {showComment ? "詳細商品資訊" : "4.5 (15則評價)"}
+                  {showComment ? "詳細商品資訊" : evaluationCount === 0 ? "目前還未有任何評論" : `${score} (${evaluationCount}則評價)`}
                 </Text>
-            </View>
+            </Pressable>
           </View>
         </>
       }
@@ -241,7 +314,7 @@ const DetailsScreen = (props: any) => {
             <TableCoulumn_TextInput value={rowPrice} name='原始價格' placeholder='原始價格' onChange={setRowPrice}/>
             <TableCoulumn_TextInput value={sellPrice} name='售出價格' placeholder='售出價格' onChange={setSellPrice}/>
             <TableCoulumn_TextInput value={count} name='庫存數量' placeholder='庫存數量' onChange={setCount}/>
-            <TableCoulumn_TextInput value={ondate} name='有效期限' placeholder='0000/00/00' onChange={setOndate}/>
+            <TableCoulumn_TextInput value={date} name='有效期限' placeholder='0000/00/00' onChange={setDate}/>
             <View style={styles.divideLine}></View>
           </View>
           <Text style={styles.smallText}>完成請滑至底部</Text>

@@ -17,12 +17,8 @@ export default function TabNewScreen() {
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [imageData, setImageData] = useState<string | null>(null);
+  const [imageType, setImageType] = useState("");
   const [pressed, setPressed] = useState(false);
-  const [typeSelectOpen, setTypeSelectOpen] = useState(false);
-  const [typeItems, setTypeItems] = useState([
-    {label: '農產', value: '農產'},
-    {label: '精緻商品', value: '精緻商品'}
-  ]);
 
   const handleImageUpload = () => {
     launchImageLibrary({
@@ -36,11 +32,7 @@ export default function TabNewScreen() {
         }
         if(res.assets !== undefined){
           setImageData(res.assets[0].uri as string);
-          uploadImage({
-            uri: res.assets[0].uri as string,
-            type: res.assets[0].type as string,
-            fileName: res.assets[0].uri?.split('/').pop() as string
-          })
+          setImageType(res.assets[0].type as string);
         }
     })
   }
@@ -52,7 +44,6 @@ export default function TabNewScreen() {
   }
 
   const uploadImage = async (params: ImagePropsType) => {
-    console.log(params)
       const formData = new FormData();
       const blob = new Blob([params.uri], { type: params.type });
       formData.append('file', blob, params.fileName);
@@ -80,11 +71,16 @@ export default function TabNewScreen() {
     return true;
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if(validateForm()){
       const [year, month, day] = date.split("/");
+      const imagePath = await uploadImage({
+        uri: imageData as string,
+        type: imageType as string,
+        fileName: imageData?.split('/').pop() as string
+      })
       axios.post(`${API_URL}/add_new_product`, {
-          name, description, rowPrice, sellPrice, type, count, picture: "", year, month, day
+          name, description, rowPrice, sellPrice, type, count, imagePath, year, month, day
         })
         .then(response => {
           console.log('Success:', response.data);
