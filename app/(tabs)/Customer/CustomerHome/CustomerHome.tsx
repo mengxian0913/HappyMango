@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   createNativeStackNavigator,
@@ -18,6 +18,7 @@ import Colors from "@constants/Colors";
 import data from "./data.json";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import Detail from "./Detail/Detail";
+import axios from "axios";
 
 interface selectBarProps {
   onSelect: boolean;
@@ -35,6 +36,7 @@ interface itemProps {
 }
 
 const SelectBar = ({ onSelect, setOnSelect }: selectBarProps) => {
+  // true => whole, false => processed
   return (
     <View style={styles.navigationContainer}>
       <TouchableHighlight
@@ -154,6 +156,36 @@ const Item = ({
 
 const Items = () => {
   const [onSelect, setOnSelect] = useState<boolean>(false);
+  const [itemData, setItemData] = useState<any>([]);
+  const [itemDataWhole, setItemDataWhole] = useState<any>([]);
+  const [itemDataProcessed, setItemDataProcessed] = useState<any>([]);
+  const getItems = async () => {
+    const response = await axios.get(
+      `${process.env.EXPO_PUBLIC_API_URL}/getCustomerProduct`,
+    );
+    const data = await response.data;
+    setItemData(data);
+  };
+
+  useEffect(() => {
+    getItems();
+  }, []);
+
+  useEffect(() => {
+    if (itemData) {
+      const arrW = [];
+      const arrP = [];
+      for (let i of itemData) {
+        if (i.PType === "whole") {
+          arrW.push(i);
+        } else {
+          arrP.push(i);
+        }
+      }
+      setItemDataWhole([...arrW]);
+      setItemDataProcessed([...arrP]);
+    }
+  }, [itemData]);
 
   return (
     <>
@@ -163,18 +195,31 @@ const Items = () => {
       </SafeAreaView>
       <ScrollView>
         <View style={styles.contentContainer}>
-          {data["archetypal-food"].map((item, index) => (
-            <Item
-              id={item.id}
-              title={item.title}
-              description={item.description}
-              sell={item.sell}
-              price={item.price}
-              image={item.image}
-              bestDate={item.bestDate}
-              key={index}
-            />
-          ))}
+          {onSelect
+            ? itemDataWhole.map((item: any) => (
+                <Item
+                  id={item.PID}
+                  title={item.PName}
+                  description={item.PDescribe}
+                  sell={item.SalePrice}
+                  price={item.Price}
+                  image={item.img}
+                  bestDate={7}
+                  key={item.PID}
+                />
+              ))
+            : itemDataProcessed.map((item: any) => (
+                <Item
+                  id={item.PID}
+                  title={item.PName}
+                  description={item.PDescribe}
+                  sell={item.SalePrice}
+                  price={item.Price}
+                  image={item.img}
+                  bestDate={7}
+                  key={item.PID}
+                />
+              ))}
         </View>
       </ScrollView>
     </>

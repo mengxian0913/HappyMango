@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet from "@gorhom/bottom-sheet";
 import {
@@ -20,10 +26,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import NotFoundScreen from "@/app/+not-found";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import CommentDetail from "./CommentDetail/CommentDetail";
-import comments from "./CommentDetail/comments.json";
+// import comments from "./CommentDetail/comments.json";
 import Colors from "@/constants/Colors";
 import { Feather } from "@expo/vector-icons";
 import AddCart from "./AddCart/AddCart";
+import axios from "axios";
 
 interface paramsProps {
   id: number;
@@ -44,7 +51,26 @@ const ItemDetail = () => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [isScrollEnabled, setIsScrollEnabled] = useState(true);
   const item = useContext(ItemContext);
-  const fewComment = comments.slice(0, 3);
+  const [comments, setComments] = useState([]);
+
+  const getComments = async () => {
+    const response = await axios.post(
+      `${process.env.EXPO_PUBLIC_API_URL}/getComments`,
+      {
+        PID: item?.id,
+      },
+    );
+    const data = await response.data;
+    setComments(data);
+  };
+
+  useEffect(() => {
+    getComments();
+  }, []);
+
+  useEffect(() => {
+    console.log("comments: ", comments);
+  }, [comments]);
 
   const handleOnPress = () => {
     console.log("Go Back");
@@ -114,22 +140,8 @@ const ItemDetail = () => {
             </View>
           </View>
 
-          <Pressable
-            onPress={() => navigation.navigate("CommentDetail" as never)}
-          >
-            <View style={styles.commentContainer}>
-              <Text style={{ flex: 7 }}>全部評論(25)</Text>
-              <Text style={{ flex: 1, fontSize: 12, color: "gray" }}>展開</Text>
-              <SimpleLineIcons
-                name="arrow-right"
-                size={16}
-                color="black"
-                style={styles.commentIcon}
-              />
-            </View>
-          </Pressable>
           <View>
-            {fewComment.map((item, index) => (
+            {comments.map((item: any, index) => (
               <View
                 key={index}
                 style={{
@@ -140,13 +152,13 @@ const ItemDetail = () => {
                 }}
               >
                 <Text style={{ fontWeight: "500", marginBottom: 5 }}>
-                  客戶名稱: {item.customerName}
+                  客戶名稱: {item.PName}
                 </Text>
                 <View style={{ flexDirection: "row", marginBottom: 5 }}>
                   <Text style={{ marginRight: 10 }}>
-                    商品評分: {item.score}
+                    商品評分: {item.Grade}
                   </Text>
-                  <Text>送貨品質: {item.delivery}</Text>
+                  <Text>送貨品質: {item.Speed}</Text>
                 </View>
                 <View
                   style={{
@@ -155,7 +167,7 @@ const ItemDetail = () => {
                     backgroundColor: "lightgray",
                   }}
                 >
-                  <Text>{item.comment}</Text>
+                  <Text>{item.EComment}</Text>
                 </View>
               </View>
             ))}
@@ -211,3 +223,19 @@ const Detail = () => {
 };
 
 export default Detail;
+
+// <Pressable
+//             onPress={() => navigation.navigate("CommentDetail" as never)}
+//           >
+//             <View style={styles.commentContainer}>
+//               <Text style={{ flex: 7 }}>全部評論(25)</Text>
+//               <Text style={{ flex: 1, fontSize: 12, color: "gray" }}>展開</Text>
+//               <SimpleLineIcons
+//                 name="arrow-right"
+//                 size={16}
+//                 color="black"
+//                 style={styles.commentIcon}
+//               />
+//             </View>
+//           </Pressable>
+//

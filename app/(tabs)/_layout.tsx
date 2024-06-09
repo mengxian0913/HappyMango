@@ -13,6 +13,9 @@ import CustomerHome from "./Customer/CustomerHome/CustomerHome";
 import { NavigationContainer } from "@react-navigation/native";
 import { TabBarIcon, Text } from "@/components/Themed";
 import CustomerUser from "./Customer/CustomerUser/CustomerUser";
+import CustomerCart from "./Customer/CustomerCart/CustomerCart";
+import CustomerTruck from "./Customer/CustomerTruck/CustomerTruck";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
@@ -26,15 +29,13 @@ const TabLayout = () => {
     setIsLogin(true);
   }, []);
 
-  if (false) {
-    return <Text style={{ fontSize: 33 }}>123</Text>;
-  } else {
+  if (isAdmin) {
     return (
       <NavigationContainer independent={true}>
         <Tab.Navigator screenOptions={{ headerShown: false }}>
           <Tab.Screen
             name="index"
-            component={isAdmin ? AdminHome : CustomerHome}
+            component={AdminHome}
             options={{
               title: "Home",
               tabBarIcon: ({ color }) => (
@@ -74,9 +75,61 @@ const TabLayout = () => {
           />
           <Tab.Screen
             name="setting"
-            component={isLogin ? CustomerUser : UserSetting}
+            component={UserSetting}
             options={{
               title: "setting",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="person" color={color} />
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
+    );
+  } else {
+    return (
+      <NavigationContainer independent={true}>
+        <Tab.Navigator
+          screenOptions={{ headerShown: false }}
+          initialRouteName="setting"
+        >
+          <Tab.Screen
+            name="home"
+            component={CustomerHome}
+            options={{
+              title: "Home",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="home" color={color} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="cart"
+            component={CustomerCart}
+            options={{
+              title: "Cart",
+              tabBarIcon: ({ color }) => (
+                <TabBarIcon name="cart" color={color} />
+              ),
+            }}
+          />
+
+          <Tab.Screen
+            name="truck"
+            component={CustomerTruck}
+            options={{
+              title: "Orders",
+              tabBarIcon: ({ color }) => (
+                <FontAwesome5 name="truck" size={20} color={color} />
+              ),
+            }}
+          />
+
+          <Tab.Screen
+            name="setting"
+            component={CustomerUser}
+            options={{
+              title: "User",
               tabBarIcon: ({ color }) => (
                 <TabBarIcon name="person" color={color} />
               ),

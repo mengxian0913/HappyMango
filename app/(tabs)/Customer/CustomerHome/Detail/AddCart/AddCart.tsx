@@ -5,6 +5,7 @@ import { PanGestureHandler } from "react-native-gesture-handler";
 import { ItemContext } from "../Detail";
 import { screenHeight, screenWidth } from "@/constants/Config";
 import Colors from "@/constants/Colors";
+import { useNavigation } from "expo-router";
 
 interface submitProps {
   totalPrice: number;
@@ -121,6 +122,7 @@ interface addCartProps {
 }
 
 const AddCart = ({ bottomSheetRef }: addCartProps) => {
+  const navigation = useNavigation();
   const snapPoints = useMemo(() => ["50%"], []);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const item = useContext(ItemContext);
@@ -130,12 +132,14 @@ const AddCart = ({ bottomSheetRef }: addCartProps) => {
     console.log("Get amount of the item");
   };
 
+  // 加入購物車
   const handleOnSubmit = async () => {
     const data = {
       amount: totalAmount,
     };
     console.log("onSubmit: data:", data);
     bottomSheetRef.current?.close();
+    navigation.navigate("cart" as never);
   };
 
   if (!item) {
