@@ -12,6 +12,8 @@ import { screenHeight, screenWidth } from "@/constants/Config";
 import Colors from "@/constants/Colors";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { OrderRootStackParamList } from "../../CustomerCart";
+import axios from "axios";
+import { store } from "@/scripts/redux";
 
 type orderItemType = {
   PID: string;
@@ -61,7 +63,7 @@ const ShowItems = ({ item }: itemPrps) => {
 const SetUpForm = ({ orderItems }: orderSetUpProps) => {
   const [payWay, setPayWay] = useState<string>("credit");
   const [deliveryWay, setDeliveryWay] = useState<string>("air"); // air, land, sea
-  const [deliveryAddress, setDeliveryAddress] = useState<string>("");
+  const [deliveryAddress, setDeliveryAddress] = useState<string>(store.getState().address);
 
   const navigation = useNavigation();
 
@@ -74,7 +76,23 @@ const SetUpForm = ({ orderItems }: orderSetUpProps) => {
     console.log("deliveryInfo: ", deliveryInfo);
     console.log("myItems: ", orderItems);
     console.log("submit the order form...");
-    // Connect to backed-end ...
+    const order = orderItems.map(item => ({
+      PID: item.PID,
+      PName: item.PName,
+      BNum: item.BNum,
+      TMoney: item.TMoney,
+      Way: deliveryInfo.payWay,
+      ShipAddress: deliveryInfo.deliveryAddress,
+      ShipMethod: deliveryInfo.deliveryWay,
+      Note: '',
+      UID: store.getState().id
+    }))
+    await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/customer/add_order`, {
+      order
+    })
+    await axios.delete(`${process.env.EXPO_PUBLIC_API_URL}/customer/delete_cart`, {
+      params: { orderID: order.map(item => ({PID: item.PID, UID: item.UID}))},
+    })
     navigation.goBack();
     navigation.navigate("truck" as never);
     return;

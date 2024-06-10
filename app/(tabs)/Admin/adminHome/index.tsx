@@ -50,46 +50,42 @@ const rebuildListData = (listData: productType[]) => {
   const newData: { [key: string]: productType[] } = {};
   for (let data of listData) {
     const type = typeMap[data.type];
-    if (type in newData){
-      newData[type].push(data);
-    } 
-    else {
-      newData[type] = [data];
-    }
+    if (type in newData) newData[type].push(data);
+    else newData[type] = [data];
   }
   return newData;
 }
 
 const TabHomeScreen = () => {
   const isFocused = useIsFocused();
-  const [data, setData] = useState<{
-    [key: string]: productType[];
-}>({});
+  const [data, setData] = useState<{[key: string]: productType[]}>({});
   const [overview, setOverview] = useState<overViewType>();
-  console.log(process.env.EXPO_PUBLIC_API_URL)
+  console.log(process.env.EXPO_PUBLIC_API_URL);
   useEffect(() => {
-    axios.get(`${process.env.EXPO_PUBLIC_API_URL}/get_product`)
-    .then(response => {
-      setData(rebuildListData(response.data));
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+    if(isFocused){
+      axios.get(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_product`)
+        .then(response => {
+          setData(rebuildListData(response.data));
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
     
-    axios.get(`${process.env.EXPO_PUBLIC_API_URL}/get_seller_overview`)
-      .then(response => {
-        setOverview(response.data[0]);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      })
+      axios.get(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_seller_overview`)
+        .then(response => {
+          setOverview(response.data[0]);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        })
+    }
   }, [isFocused]);
 
   return (
     <AdminTemplate
       topLayer={
         <>
-          <Text style={styles.title}>HappyNature 後臺</Text>
+          <Text style={styles.title}>{process.env.EXPO_PUBLIC_APP_NAME} 後臺</Text>
           <View style={[styles.mainCard, {width: '90%', marginLeft: 20}]}>
             <Text style={styles.cardTitle}>總收入：{overview?.income}</Text>
             <Text style={styles.cardTitle}>完成訂單：{overview?.doneOrderCount} 張</Text>
@@ -212,7 +208,7 @@ const DetailsScreen = (props: any) => {
         fileName: imageData?.split('/').pop() as string
       })
     }
-    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/update_product`, {
+    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/admin/update_product`, {
         id: item.id,
         name, type, description, price, salePrice, count, year, month, day, imagePath
     })
@@ -225,7 +221,7 @@ const DetailsScreen = (props: any) => {
   }
 
   const handleDeleteProduct = () => {
-    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/delete_product`,{
+    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/admin/delete_product`,{
       id: item.id
     })
       .then(res => {
@@ -246,7 +242,7 @@ const DetailsScreen = (props: any) => {
 
   useEffect(() => {
     if(showComment){
-      axios.get(`${process.env.EXPO_PUBLIC_API_URL}/get_product_evaluation`, {
+      axios.get(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_product_evaluation`, {
         params: {
           name: name
         }
@@ -258,7 +254,7 @@ const DetailsScreen = (props: any) => {
             console.error('Error:', error);
         })    
     }else{
-      axios.get(`${process.env.EXPO_PUBLIC_API_URL}/get_specific_product`, {
+      axios.get(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_specific_product`, {
         params: {
           id: item.id
         }
@@ -303,7 +299,7 @@ const DetailsScreen = (props: any) => {
             <TabBarIcon 
               name="add-circle-sharp"
               size={32}
-              color={'#FFF'}
+              color={'#F2545B'}
             />
           </Pressable>
           <View style={styles.imageCard}>

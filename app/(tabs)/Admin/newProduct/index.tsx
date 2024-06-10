@@ -98,7 +98,7 @@ export default function TabNewScreen() {
         url: imageData,
         fileName: imageData?.split('/').pop() as string
       })
-      axios.post(`${process.env.EXPO_PUBLIC_API_URL}/add_new_product`, {
+      axios.post(`${process.env.EXPO_PUBLIC_API_URL}/admin/add_new_product`, {
           name, description, price, salePrice, type, count, imagePath, year, month, day
         })
         .then(response => {

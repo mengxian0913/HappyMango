@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useEffect } from "react";
 import OrderList from "./components/OrderList/OrderList";
 import OrderSetUp from "./components/OrderSetUp/OrderSetUp";
 
@@ -21,6 +21,7 @@ export type OrderRootStackParamList = {
 const ItemStack = createNativeStackNavigator<OrderRootStackParamList>();
 
 const CustomerCart = () => {
+
   return (
     <ItemStack.Navigator
       initialRouteName="OrderList"

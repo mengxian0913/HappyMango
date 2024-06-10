@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef, useState, RefObject } from "react";
+import React, { useContext, useMemo, useRef, useState, RefObject, useEffect } from "react";
 import { Button, Text, View, Pressable } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { PanGestureHandler } from "react-native-gesture-handler";
@@ -6,6 +6,8 @@ import { ItemContext } from "../Detail";
 import { screenHeight, screenWidth } from "@/constants/Config";
 import Colors from "@/constants/Colors";
 import { useNavigation } from "expo-router";
+import axios from 'axios';
+import { store } from "@/scripts/redux";
 
 interface submitProps {
   totalPrice: number;
@@ -126,25 +128,39 @@ const AddCart = ({ bottomSheetRef }: addCartProps) => {
   const snapPoints = useMemo(() => ["50%"], []);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const item = useContext(ItemContext);
-  const amount: number = 55;
+  const amount = useRef(0);
 
   const getAmountOfItem = async () => {
-    console.log("Get amount of the item");
+    const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/customer/get_amount`, {
+      PID: item?.id
+    })
+    amount.current = await response.data;
   };
 
   // 加入購物車
   const handleOnSubmit = async () => {
-    const data = {
-      amount: totalAmount,
-    };
-    console.log("onSubmit: data:", data);
+    if(store.getState().role === ''){
+      navigation.navigate("Login" as never);
+      return;
+    }
     bottomSheetRef.current?.close();
+    const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/customer/add_to_cart`, {
+      UID: store.getState().id,
+      PID: item.id,
+      PName: item.title,
+      BNum: totalAmount,
+      TMoney: totalAmount * item.sell
+    })
     navigation.navigate("cart" as never);
   };
 
   if (!item) {
     return null;
   }
+
+  useEffect(() => {
+    getAmountOfItem();
+  }, []);
 
   return (
     <BottomSheet
@@ -172,7 +188,7 @@ const AddCart = ({ bottomSheetRef }: addCartProps) => {
             </Text>
           </View>
           <AmountAndCounter
-            amount={amount}
+            amount={amount.current}
             totalAmount={totalAmount}
             setTotalAmount={setTotalAmount}
           />

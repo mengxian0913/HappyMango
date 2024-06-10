@@ -5,12 +5,15 @@ import styles from "./style";
 import { orderItemType } from "../OrderList";
 import { AntDesign } from "@expo/vector-icons";
 import { screenWidth } from "@/constants/Config";
+import axios from "axios";
+import { store } from "@/scripts/redux";
 
 interface itemProps {
   dataOfOrderItems: orderItemType;
   orderItems: orderItemType[];
   setOrderItems: (key: orderItemType[]) => void;
   setTotoalPrice: (key: number) => void;
+  getCart: () => Promise<void>;
   totalPrice: number; // 所有品項金額加總
 }
 
@@ -19,13 +22,20 @@ const ItemCard = ({
   orderItems,
   setOrderItems,
   setTotoalPrice,
+  getCart,
   totalPrice,
 }: itemProps) => {
   const [onSelected, setOnSelected] = useState<boolean>(false);
-
   const handleOnSelected = () => {
     setOnSelected(!onSelected);
   };
+
+  const handleRemove = async () => {
+    await axios.delete(`${process.env.EXPO_PUBLIC_API_URL}/customer/delete_cart`, {
+      params: { orderID: {PID: dataOfOrderItems.PID, UID: store.getState().id}},
+    })
+    getCart();
+  }
 
   useEffect(() => {
     if (onSelected === true) {
@@ -60,7 +70,7 @@ const ItemCard = ({
             alignItems: "flex-end",
           }}
         >
-          <AntDesign name="delete" size={24} color="black" />
+          <AntDesign onPress={handleRemove} name="delete" size={24} color="black" />
         </View>
         <Text style={{ fontSize: 18, fontWeight: "500" }}>
           {dataOfOrderItems.PName}

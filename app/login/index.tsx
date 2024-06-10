@@ -1,33 +1,56 @@
 import AdminTemplate from '@/components/AdminTemplate';
 import { Pressable, Text, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { TextInput } from '@/components/Themed';
 import styles from './style';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { store, userLogin, adminLogin } from '@/scripts/redux';
 
 export default function LoginScreen(params: any){
-    const setAdmin = (state: boolean) => params.route.params.setAdmin(state);
-    const setUser = (state: boolean) => params.route.params.setUser(state);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    
+    const [isWarn, setIsWarn] = useState(false);
+    const warning = "Wrong Username or Password!!";
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        setUsername('');
+        setPassword('');
+        setIsWarn(false);
+    }, [isFocused]);
+
     const handleLogin = () => {
         axios.post(`${process.env.EXPO_PUBLIC_API_URL}/login`,{
             username, password
         })
             .then(res => {
-                if(res.data === 'Admin Login'){
-                    setAdmin(true);
+                const data = res.data;
+                if(data.result === 'Admin Login'){
+                    store.dispatch(adminLogin({
+                        id: data.SID,
+                        name: data.SName,
+                        address: data.SAddress,
+                        phone: data.SPhone
+                    }));
                 }
-                else if(res.status == 200) {
-                    setUser(true);
+                else if(data.result == 'User Login') {
+                    store.dispatch(userLogin({
+                        id: data.UID,
+                        name: data.UName,
+                        address: data.UAddress,
+                        phone: data.UPhone
+                    }));
                 }
-                else{
-                    console.log('Wrong User or Password');
+                else if(data.result == 'No exist'){
+                    setIsWarn(true);
                 }
             })
             .catch(err => {
                 console.error(err);
+            })
+            .finally(() => {
+                console.log(store.getState());
             })
     }
 
@@ -36,7 +59,7 @@ export default function LoginScreen(params: any){
             topLayer={
                 <>
                     <View style={styles.header}>
-                        <Text style={styles.headerText}>HappyMango</Text>
+                        <Text style={styles.headerText}>{process.env.EXPO_PUBLIC_APP_NAME}</Text>
                     </View>
                 </>
             }
@@ -44,6 +67,7 @@ export default function LoginScreen(params: any){
                 <>
                     <View style={styles.login_container}>
                         <Text style={styles.loginText}>Login</Text>
+                        { isWarn && <Text style={[styles.warningText, {textAlign: 'center'}]}>{warning}</Text> }
                         <View style={styles.input_box}>
                             <Text style={styles.labelText}>UserName</Text>
                             <TextInput placeholder='Enter your username' value={username} onChange={setUsername}></TextInput>

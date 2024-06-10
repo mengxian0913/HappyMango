@@ -1,9 +1,9 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeStackScreen from './Admin/adminHome';
-import TabAdminScreen from './Admin/userSetting';
-import TabNewScreen from './Admin/newProduct';
-import OrderStackScreen from './Admin/orderList';
+import HomeStackScreen from './Admin/AdminHome';
+import TabAdminScreen from './Admin/AdminProfile';
+import TabNewScreen from './Admin/NewProduct';
+import OrderStackScreen from './Admin/OrderList';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { TabBarIcon } from '@/components/Themed';

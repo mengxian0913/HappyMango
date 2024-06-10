@@ -10,6 +10,7 @@ import AddressSetting from "./components/AddressSetting/AddressSetting";
 import NameSetting from "./components/NameSetting/NameSetting";
 import EmailSetting from "./components/EmailSetting/EmailSetting";
 import PhoneSetting from "./components/PhoneSetting/PhoneSetting";
+import { Logout, store } from "@/scripts/redux";
 
 const Header = () => {
   return (
@@ -68,13 +69,16 @@ const SettingList = () => {
   ];
 
   const currentUser = {
-    userName: "Vincent",
+    userName: store.getState().name,
   };
 
-  return (
-    <>
-      <Header />
+  const handleLogout = () => {
+    store.dispatch(Logout());
+  }
 
+  return (
+    <View style={{alignItems: 'center'}}>
+      <Header />
       <ScrollView>
         <View
           style={{
@@ -102,23 +106,28 @@ const SettingList = () => {
           ))}
         </View>
       </ScrollView>
-    </>
+      <Pressable onPress={() => handleLogout()} style={[styles.pressButton]}>
+        <Text style={{fontSize: 20, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>登出</Text>
+      </Pressable>
+    </View>
   );
 };
 
 const CustomerUser = () => {
   return (
-    <ItemStack.Navigator
-      initialRouteName="settingList"
-      screenOptions={{ headerShown: false }}
-    >
-      <ItemStack.Screen name="settingList" component={SettingList} />
-      <ItemStack.Screen name="passwordSetting" component={PasswordSetting} />
-      <ItemStack.Screen name="addressSetting" component={AddressSetting} />
-      <ItemStack.Screen name="nameSetting" component={NameSetting} />
-      <ItemStack.Screen name="emailSetting" component={EmailSetting} />
-      <ItemStack.Screen name="phoneSetting" component={PhoneSetting} />
-    </ItemStack.Navigator>
+    <>
+      <ItemStack.Navigator
+        initialRouteName="settingList"
+        screenOptions={{ headerShown: false }}
+      >
+        <ItemStack.Screen name="settingList" component={SettingList} />
+        <ItemStack.Screen name="passwordSetting" component={PasswordSetting} />
+        <ItemStack.Screen name="addressSetting" component={AddressSetting} />
+        <ItemStack.Screen name="nameSetting" component={NameSetting} />
+        <ItemStack.Screen name="emailSetting" component={EmailSetting} />
+        <ItemStack.Screen name="phoneSetting" component={PhoneSetting} />
+      </ItemStack.Navigator>
+    </>
   );
 };
 

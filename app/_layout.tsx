@@ -1,28 +1,37 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useState, useEffect } from 'react';
+import React, { ReactNode, FC, useEffect, createContext, PropsWithChildren, } from 'react';
 import { useFonts } from 'expo-font';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import 'react-native-reanimated';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
-import LoginScreen from './login';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import LoginScreen from './Login';
 import { NativeBaseProvider } from 'native-base';
 import { TabBarIcon } from '@/components/Themed';
-import HomeStackScreen from './(tabs)/Admin/adminHome';
-import TabAdminScreen from './(tabs)/Admin/userSetting';
-import TabNewScreen from './(tabs)/Admin/newProduct';
-import OrderStackScreen from './(tabs)/Admin/orderList';
+import { FontAwesome5 } from "@expo/vector-icons";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
+import HomeStackScreen from './(tabs)/Admin/AdminHome';
+import TabAdminScreen from './(tabs)/Admin/AdminProfile';
+import TabNewScreen from './(tabs)/Admin/NewProduct';
+import OrderStackScreen from './(tabs)/Admin/OrderList';
 
 import CustomerHome from './(tabs)/Customer/CustomerHome/CustomerHome';
 import CustomerCart from './(tabs)/Customer/CustomerCart/CustomerCart';
 import CustomerTruck from './(tabs)/Customer/CustomerTruck/CustomerTruck';
 import CustomerUser from './(tabs)/Customer/CustomerUser/CustomerUser';
 
-import { FontAwesome5 } from "@expo/vector-icons";
+import { useSelector, Provider } from 'react-redux';
+import { store, State } from "@/scripts/redux";
+import { Store } from 'redux';
 
 const navigationRef = createNavigationContainerRef();
+
+// const Auth = createContext<{store: Store} | null>(null);
+
+// const Provider =({ store, children }: PropsWithChildren<{store: Store}>) => {
+//   return <Auth.Provider value={{ store }}>{children}</Auth.Provider>;
+// };
 
 const navigate = (name: string, params?: any) => {
   if(navigationRef.isReady()){
@@ -64,18 +73,42 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-  return <RootLayoutNav />
+  return (
+    <Provider store={store}>
+      <NativeBaseContainer />
+    </Provider>
+  )
 }
 
-const RootLayoutNav = () => {
-  const colorScheme = useColorScheme();
-  const [admin, setAdmin] = useState(false);
-  const [user, setUser] = useState(false);
+function NativeBaseContainer() {
   const linking: any = {
     prefixes: ['http://localhost:8081', 'https://coordinator-output-reject-thing.trycloudflare.com'],
     config: {
       screens: {
         Login: 'login',
+        home: {
+          screens: {
+            Item: 'item',
+            Details: 'details'
+          }
+        },
+        cart: {
+          screens: {
+            OrderList: 'order/list',
+            OrderSetup: 'order/setup'
+          }
+        },
+        truck: 'truck',
+        setting: {
+          screens: {
+            settingList: 'setting/list',
+            passwordSetting: 'setting/password',
+            addressSetting: 'setting/address',
+            nameSetting: 'setting/name',
+            emailSetting: 'setting/email',
+            phoneSetting: 'setting/phone'
+          }
+        },
         AdminHome: {
           screens: {
             Home: 'admin/Home',
@@ -83,39 +116,52 @@ const RootLayoutNav = () => {
           }
         },
         NewProduct: 'admin/new',
-        Order: {
+        OrderLists: {
           screens: {
             Order: 'order/list',
             Details: 'order/details'
           }
         },
         AdminProfile: 'admin/profile',
+
         NotFound: '*',
       },
     }
   }
 
-  useEffect(() => {
-    if(admin) navigate('AdminHome');
-    else navigate('Login');
-  }, [admin]);
-
   return (
     <NativeBaseProvider>
       <NavigationContainer ref={navigationRef} linking={linking} independent={true}>
-        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <ButtomTabs.Navigator screenOptions={{ headerShown: false }}>
-              { !admin &&  <>
-                <ButtomTabs.Screen
-                  name="home"
-                  component={CustomerHome}
-                  options={{
-                    title: "Home",
-                    tabBarIcon: ({ color }) => (
-                      <TabBarIcon name="home" color={color} />
-                    ),
-                  }}
-                />
+        <RootLayoutNav />
+      </NavigationContainer>
+    </NativeBaseProvider>
+  )
+}
+
+const RootLayoutNav = () => {
+  const role: string = useSelector((state: State) => state.role);
+  useEffect(() => {
+    if(role === 'admin') navigate('AdminHome');
+    else if(role === 'user') navigate('setting');
+    else navigate('Login');
+  }, [role]);
+
+  return (
+    <ThemeProvider value={DefaultTheme}>
+      <ButtomTabs.Navigator screenOptions={{ headerShown: false }}>
+          { role !== 'admin' &&  <>
+            <ButtomTabs.Screen
+              name="home"
+              component={CustomerHome}
+              options={{
+                title: "Home",
+                tabBarIcon: ({ color }) => (
+                  <TabBarIcon name="home" color={color} />
+                ),
+              }}
+            />
+            { role as string == 'user' &&
+              <>
                 <ButtomTabs.Screen
                   name="cart"
                   component={CustomerCart}
@@ -126,7 +172,6 @@ const RootLayoutNav = () => {
                     ),
                   }}
                 />
-
                 <ButtomTabs.Screen
                   name="truck"
                   component={CustomerTruck}
@@ -137,71 +182,69 @@ const RootLayoutNav = () => {
                     ),
                   }}
                 />
-                { user ? 
-                  <ButtomTabs.Screen
-                    name="setting"
-                    component={CustomerUser}
-                    options={{
-                      title: "User",
-                      tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="person" color={color} />
-                      ),
-                    }}
-                  />  :
-                  <ButtomTabs.Screen
-                    name="Login"
-                    component={LoginScreen}
-                    initialParams={{setAdmin, setUser}}
-                    options={{
-                      title: 'Login',
-                      tabBarIcon: ({ color }) => (
-                        <TabBarIcon name="person" color={color} /> 
-                      )
-                    }}
-                  />
-                } 
-                </>
-              }
-              { admin &&
-                <>
-                  <ButtomTabs.Screen
-                    name="AdminHome"
-                    component={HomeStackScreen}
-                    options={{
-                      title: 'Home',
-                      tabBarIcon: ({ color }) => <TabBarIcon name="home-outline" color={color} />,
-                    }}
-                  />
-                  <ButtomTabs.Screen
-                    name="Order"
-                    component={OrderStackScreen}
-                    options={{
-                      title: 'Order Info',
-                      tabBarIcon: ({ color }) => <TabBarIcon name="receipt" color={color} />,
-                    }}
-                  />
-                  <ButtomTabs.Screen
-                    name="NewProduct"
-                    component={TabNewScreen}
-                    options={{
-                      title: 'New Product',
-                      tabBarIcon: ({ color }) => <TabBarIcon name="add-circle-outline" color={color} />,
-                    }}
-                  />
-                  <ButtomTabs.Screen
-                    name="AdminProfile"
-                    component={TabAdminScreen}
-                    initialParams={{setAdmin}}
-                    options={{
-                      title: 'Admin',
-                      tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
-                    }}
-                  />
-                </> 
-              }
-          </ButtomTabs.Navigator>
-        </ThemeProvider>
-      </NavigationContainer>
-    </NativeBaseProvider>
+              </>
+            }
+            { role as string === 'user' ? 
+              <ButtomTabs.Screen
+                name="setting"
+                component={CustomerUser}
+                options={{
+                  title: "User",
+                  tabBarIcon: ({ color }) => (
+                    <TabBarIcon name="person" color={color} />
+                  ),
+                }}
+              />  :
+              <ButtomTabs.Screen
+                name="Login"
+                component={LoginScreen}
+                options={{
+                  title: 'Login',
+                  tabBarIcon: ({ color }) => (
+                    <TabBarIcon name="person" color={color} /> 
+                  )
+                }}
+              />
+            } 
+            </>
+          }
+          { role === 'admin' &&
+            <>
+              <ButtomTabs.Screen
+                name="AdminHome"
+                component={HomeStackScreen}
+                options={{
+                  title: 'Home',
+                  tabBarIcon: ({ color }) => <TabBarIcon name="home-outline" color={color} />,
+                }}
+              />
+              <ButtomTabs.Screen
+                name="OrderLists"
+                component={OrderStackScreen}
+                options={{
+                  title: 'Order Info',
+                  tabBarIcon: ({ color }) => <TabBarIcon name="receipt" color={color} />,
+                }}
+              />
+              <ButtomTabs.Screen
+                name="NewProduct"
+                component={TabNewScreen}
+                options={{
+                  title: 'New Product',
+                  tabBarIcon: ({ color }) => <TabBarIcon name="add-circle-outline" color={color} />,
+                }}
+              />
+              <ButtomTabs.Screen
+                name="AdminProfile"
+                component={TabAdminScreen}
+                options={{
+                  title: 'Admin',
+                  tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
+                }}
+              />
+            </> 
+          }
+      </ButtomTabs.Navigator>
+    </ThemeProvider>
   );
 }

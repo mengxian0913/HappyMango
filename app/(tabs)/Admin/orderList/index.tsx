@@ -40,7 +40,7 @@ const OrderScreen = () => {
   useEffect(() => {
     console.log(`${process.env.EXPO_PUBLIC_API_URL}/get_all_order`);
     setIsPress([1, 0, 0]);
-    axios.get<AllorderType>(`${process.env.EXPO_PUBLIC_API_URL}/get_all_order`)
+    axios.get<AllorderType>(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_all_order`)
     .then(response => {
       all_order_data.current = response.data;
       setData(rebuildOrderData(all_order_data.current.onprogress));
@@ -155,6 +155,7 @@ const OrderView = (props: {
 }
 
 const DetailsScreen = (props: any) => {
+  const isFocused = useIsFocused();
   const item = props.route.params;
   const addFeedback = props.route.params.addFeedback;
   const navigation = useNavigation();
@@ -162,7 +163,7 @@ const DetailsScreen = (props: any) => {
   const [cancelFactor, setCancelFactor] = useState("");
 
   const handleConfirm = () => {
-    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/confirm_order`, {
+    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/admin/confirm_order`, {
       id: item.id
     })
       .then(res => {
@@ -181,7 +182,7 @@ const DetailsScreen = (props: any) => {
   }
 
   const handleCancel = () => {
-    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/delete_order`, {
+    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/admin/delete_order`, {
       id: item.id,
       factor: cancelFactor
     })
@@ -200,7 +201,8 @@ const DetailsScreen = (props: any) => {
   }
 
   useEffect(() => {
-    axios.get(`${process.env.EXPO_PUBLIC_API_URL}/get_specific_order`, {
+    if(!isFocused) return;
+    axios.get(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_specific_order`, {
       params: {
         id: item.id
       }
@@ -222,7 +224,7 @@ const DetailsScreen = (props: any) => {
       .catch(error => {
           console.error('Error:', error);
       })  
-  }, [])
+  }, [isFocused])
 
   return (
     <AdminTemplate

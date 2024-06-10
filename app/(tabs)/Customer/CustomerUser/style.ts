@@ -4,6 +4,7 @@ import Colors from "@/constants/Colors";
 
 const styles = StyleSheet.create({
   headerContainer: {
+    alignContent: 'center',
     width: screenWidth,
     maxHeight: screenHeight * 0.12,
     backgroundColor: Colors.light.tint,
@@ -26,7 +27,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginVertical: 10,
     padding: 20,
-  },
+  },  
+  pressButton: {
+    marginVertical: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    height: 40,
+    width: '90%',
+    backgroundColor: '#EC9039',
+},
 });
 
 export default styles;

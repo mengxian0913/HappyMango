@@ -26,11 +26,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import NotFoundScreen from "@/app/+not-found";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import CommentDetail from "./CommentDetail/CommentDetail";
-import _comments from "./CommentDetail/comments.json";
 import Colors from "@/constants/Colors";
 import { Feather } from "@expo/vector-icons";
 import AddCart from "./AddCart/AddCart";
 import axios from "axios";
+import { CommentType } from "@/constants/types/customerHome";
 
 interface paramsProps {
   id: number;
@@ -42,7 +42,15 @@ interface paramsProps {
   bestDate: number;
 }
 
-export const ItemContext = createContext<paramsProps | undefined>(undefined);
+export const ItemContext = createContext<paramsProps>({
+  id: 0,
+  title: '',
+  sell: 0,
+  price: 0,
+  description: '',
+  image: '',
+  bestDate: 0
+});
 
 const ItemDetail = () => {
   const navigation = useNavigation();
@@ -51,25 +59,23 @@ const ItemDetail = () => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [isScrollEnabled, setIsScrollEnabled] = useState(true);
   const item = useContext(ItemContext);
-  const [comments, setComments] = useState(_comments);
+  const [comments, setComments] = useState<CommentType[]>([]);
 
   const getComments = async () => {
     const response = await axios.post(
-      `${process.env.EXPO_PUBLIC_API_URL}/getComments`,
-      {
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_comments`, {
         PID: item?.id,
       },
     );
     const data = await response.data;
-    setComments(data);
+    setComments(data.slice(0, 3));
   };
 
   useEffect(() => {
-    // getComments();
+    getComments();
   }, []);
 
   useEffect(() => {
-    console.log("comments: ", comments);
   }, [comments]);
 
   const handleOnPress = () => {
@@ -197,7 +203,7 @@ const DetailStack = createNativeStackNavigator();
 
 const Detail = () => {
   const route = useRoute();
-  const { id, title, sell, price, description, image, bestDate } = route.params;
+  const { id, title, sell, price, description, image, bestDate } = route.params as paramsProps;
 
   const item = {
     id: id,

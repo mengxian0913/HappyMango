@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
@@ -15,7 +15,6 @@ import {
 import styles from "./style";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Colors from "@/constants/Colors";
-import _data from "./data.json";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import Detail from "./Detail/Detail";
 import axios from "axios";
@@ -155,31 +154,22 @@ const Item = ({
 };
 
 const Items = () => {
+  const isFocused = useIsFocused();
   const [onSelect, setOnSelect] = useState<boolean>(false);
   const [itemData, setItemData] = useState<any>([]);
-  const [itemDataWhole, setItemDataWhole] = useState<any>(_data["archetypal-food"]);
-  const [itemDataProcessed, setItemDataProcessed] = useState<any>(_data["archetypal-food"]);
+  const [itemDataWhole, setItemDataWhole] = useState<any>([]);
+  const [itemDataProcessed, setItemDataProcessed] = useState<any>([]);
   const getItems = async () => {
     const response = await axios.get(
-      `${process.env.EXPO_PUBLIC_API_URL}/getCustomerProduct`,
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_product`,
     );
     const data = await response.data;
     setItemData(data);
   };
 
   useEffect(() => {
-    const NewitemDataWhole = itemDataWhole.map((item: any) => ({
-      PID: item.id,
-      PName: item.title,
-      PDescribe: item.decription,
-      Price: item.price,
-      SalePrice: item.sell,
-      img: item.image,
-    }))
-    setItemDataWhole(NewitemDataWhole);
-    setItemDataProcessed(NewitemDataWhole)
-    // getItems();
-  }, []);
+    if(isFocused) getItems();
+  }, [isFocused]);
 
   useEffect(() => {
     if (itemData.length > 0) {
@@ -200,7 +190,7 @@ const Items = () => {
   return (
     <>
       <SafeAreaView style={styles.navContainer}>
-        <Text style={styles.title}>Happy Mango</Text>
+        <Text style={styles.title}>{process.env.EXPO_PUBLIC_APP_NAME}</Text>
         <SelectBar onSelect={onSelect} setOnSelect={setOnSelect} />
       </SafeAreaView>
       <ScrollView>

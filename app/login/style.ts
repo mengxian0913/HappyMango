@@ -21,15 +21,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     input_box: {
+        marginTop: 30,
         width: '100%',
         paddingHorizontal: 30,
-        paddingBottom: 30
     },
     loginText: {
         fontSize: 40,
         fontWeight: '500',
         textAlign: 'center',
-        marginBottom: 50
     },
     labelText: {
         fontSize: 20,
@@ -45,6 +44,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 'auto',
         borderCurve: 'circular',
         borderRadius: 20,
+    },
+    warningText: {
+        color: '#F4442E',
+        fontSize: 10,
+        fontWeight: '500'
     }
 })
 

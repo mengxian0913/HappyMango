@@ -1,4 +1,3 @@
-import Colors from "@/constants/Colors";
 import { screenHeight, screenWidth } from "@/constants/Config";
 import { StyleSheet } from "react-native";
 

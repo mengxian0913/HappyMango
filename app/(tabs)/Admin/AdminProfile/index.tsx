@@ -5,8 +5,8 @@ import AdminTemplate from '@/components/AdminTemplate';
 import { Text, View, TableCoulumn_TextInput, Feedback } from '@/components/Themed';
 import styles from './style';
 import axios from 'axios';
-import {  } from 'expo-router';
-import { State } from 'react-native-gesture-handler';
+import { useIsFocused } from '@react-navigation/native';
+import { Logout, store } from '@/scripts/redux';
 
 const warningState = {
   name: {
@@ -29,7 +29,7 @@ const warningState = {
 
 
 export default function TabAdminScreen(params: any) {
-  const setAdmin = (state: boolean) => params.route.params.setAdmin(state);
+  const isFocused = useIsFocused();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [phone, setPhone] = useState("");
@@ -68,7 +68,7 @@ export default function TabAdminScreen(params: any) {
     setWarning({...warningState});
     if(!validateForm()) return;
     setPressed(true);
-    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/update_seller`, {
+    axios.post(`${process.env.EXPO_PUBLIC_API_URL}/admin/update_seller`, {
       id, name, description, phone, address
     })
       .then(response => {
@@ -85,13 +85,14 @@ export default function TabAdminScreen(params: any) {
   }
 
   const handleLogout = () => {
-    setAdmin(false);
+    store.dispatch(Logout());
   }
 
   useEffect(() => {
+    if(!isFocused) return;
     setPressed(false);
     setSuccess(false);
-    axios.get(`${process.env.EXPO_PUBLIC_API_URL}/get_seller`, {
+    axios.get(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_seller`, {
       })
         .then(response => {
           const seller = response.data[0];
@@ -107,7 +108,7 @@ export default function TabAdminScreen(params: any) {
         .finally(() => {
           setUpdate(false);
         })
-  }, [])
+  }, [isFocused])
 
   useUpdateEffect(() => {
     setUpdate(true);

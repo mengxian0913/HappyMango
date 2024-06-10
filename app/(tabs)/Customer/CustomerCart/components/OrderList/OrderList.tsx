@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./style";
@@ -10,8 +10,10 @@ import ItemCard from "./ItemCard/ItemCard";
 import { screenHeight, screenWidth } from "@/constants/Config";
 import Colors from "@/constants/Colors";
 import { useNavigation } from "expo-router";
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp, useIsFocused } from "@react-navigation/native";
 import { OrderRootStackParamList } from "../../CustomerCart";
+import axios from "axios";
+import { store } from "@/scripts/redux";
 
 const Header = () => {
   return (
@@ -28,29 +30,35 @@ interface contextProps {
   setOrderItems: (key: orderItemType[]) => void;
 }
 
+type CartItemType = {
+  PID: string,
+  PName: string,
+  BNum: number,
+  Sell: number,
+  TMoney: number
+}
+
 const Context = ({
   totalPrice,
   setTotalPrice,
   orderItems,
   setOrderItems,
 }: contextProps) => {
-  // fetch data from backend function ...
-  const data = [
-    {
-      PID: "00000001",
-      PName: "愛文芒果",
-      Sell: 35,
-      BNum: 10,
-      TMoney: 350,
-    },
-    {
-      PID: "00000002",
-      PName: "玉井芒果",
-      Sell: 40,
-      BNum: 10,
-      TMoney: 400,
-    },
-  ];
+
+  const [data, setData] = useState<CartItemType[]>([]);
+  const isFocused = useIsFocused();
+  // const [refresh, setRefresh] = useState(false)
+  const getCart = async () => {
+    const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/customer/get_cart`, {
+      UID: store.getState().id
+    })
+    const data = await response.data;
+    setData(data);
+  }
+
+  useEffect(() => {
+    getCart();
+  }, [isFocused]);
 
   return (
     <ScrollView>
@@ -68,6 +76,7 @@ const Context = ({
             dataOfOrderItems={item}
             totalPrice={totalPrice}
             setTotoalPrice={setTotalPrice}
+            getCart={getCart}
           />
         ))}
       </View>
@@ -132,6 +141,7 @@ const OrderArea = ({ totalPrice, orderItems }: props) => {
 };
 
 const OrderList = () => {
+
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [orderItems, setOrderItems] = useState<orderItemType[]>([]);
 

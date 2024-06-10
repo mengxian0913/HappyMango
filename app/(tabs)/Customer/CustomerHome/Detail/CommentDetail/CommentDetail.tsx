@@ -1,16 +1,33 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styles from "./styles";
-import comments from "./comments.json";
 import { ItemContext } from "../Detail";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import { View, Pressable, Text, ScrollView } from "react-native";
 import Colors from "@/constants/Colors";
+import axios from "axios";
+import { CommentType } from "@/constants/types/customerHome";
 
 const CommentDetail = () => {
   const navigation = useNavigation();
   const item = useContext(ItemContext);
+  const [comments, setComments] = useState<CommentType[]>([]);
+
+  const getComments = async () => {
+    const response = await axios.post(
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_comments`, {
+        PID: item?.id,
+      },
+    );
+    const data = await response.data;
+    setComments(data);
+  };
+
+  useEffect(() => {
+    getComments();
+  }, []);
+
   return (
     <>
       <SafeAreaView style={styles.navContainer}>
@@ -22,7 +39,7 @@ const CommentDetail = () => {
       </SafeAreaView>
       <ScrollView style={styles.contentContainer}>
         <View>
-          {comments.map((item, index) => (
+          {comments.length > 0 && comments.map((item, index) => (
             <View
               key={index}
               style={{
