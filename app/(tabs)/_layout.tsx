@@ -1,37 +1,54 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeStackScreen from './Admin/adminHome';
+import TabAdminScreen from './Admin/userSetting';
+import TabNewScreen from './Admin/newProduct';
+import OrderStackScreen from './Admin/orderList';
 
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from '@/components/useColorScheme';
+import { TabBarIcon } from '@/components/Themed';
 
-export default function TabLayout() {
+const ButtomTabs = createBottomTabNavigator();
+
+function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
-  );
+      <ButtomTabs.Navigator screenOptions={{ headerShown: false }}>
+        <ButtomTabs.Screen
+          name="index"
+          component={HomeStackScreen}
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ color }) => <TabBarIcon name="home-outline" color={color} />,
+          }}
+        />
+        <ButtomTabs.Screen
+          name="order"
+          component={OrderStackScreen}
+          options={{
+            title: 'Order Info',
+            tabBarIcon: ({ color }) => <TabBarIcon name="receipt" color={color} />,
+          }}
+        />
+        <ButtomTabs.Screen
+          name="new"
+          component={TabNewScreen}
+          options={{
+            title: 'New Product',
+            tabBarIcon: ({ color }) => <TabBarIcon name="add-circle-outline" color={color} />,
+          }}
+        />
+        <ButtomTabs.Screen
+          name="admin"
+          component={TabAdminScreen}
+          options={{
+            title: 'Admin',
+            tabBarIcon: ({ color }) => <TabBarIcon name="person" color={color} />,
+          }}
+        />
+      </ButtomTabs.Navigator>
+  )
 }
+
+export default TabLayout;
