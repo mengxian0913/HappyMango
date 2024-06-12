@@ -8,6 +8,7 @@ import { View, Pressable, Text, ScrollView } from "react-native";
 import Colors from "@/constants/Colors";
 import axios from "axios";
 import { CommentType } from "@/constants/types/customerHome";
+import { screenWidth } from "@/constants/Config";
 
 const CommentDetail = () => {
   const navigation = useNavigation();
@@ -16,7 +17,8 @@ const CommentDetail = () => {
 
   const getComments = async () => {
     const response = await axios.post(
-      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_comments`, {
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_comments`,
+      {
         PID: item?.id,
       },
     );
@@ -38,35 +40,39 @@ const CommentDetail = () => {
         </View>
       </SafeAreaView>
       <ScrollView style={styles.contentContainer}>
-        <View>
-          {comments.length > 0 && comments.map((item, index) => (
-            <View
-              key={index}
-              style={{
-                marginVertical: 10,
-                backgroundColor: Colors.light.background,
-                borderRadius: 10,
-                padding: 15,
-              }}
-            >
-              <Text style={{ fontWeight: "500", marginBottom: 5 }}>
-                客戶名稱: {item.customerName}
-              </Text>
-              <View style={{ flexDirection: "row", marginBottom: 5 }}>
-                <Text style={{ marginRight: 10 }}>商品評分: {item.score}</Text>
-                <Text>送貨品質: {item.delivery}</Text>
-              </View>
+        <View style={{ width: screenWidth }}>
+          {comments.length > 0 &&
+            comments.map((item, index) => (
               <View
+                key={index}
                 style={{
-                  padding: 10,
-                  borderRadius: 6,
-                  backgroundColor: "lightgray",
+                  width: screenWidth * 0.95,
+                  marginVertical: 10,
+                  backgroundColor: Colors.light.background,
+                  borderRadius: 10,
+                  padding: 15,
                 }}
               >
-                <Text>{item.comment}</Text>
+                <Text style={{ fontWeight: "500", marginBottom: 5 }}>
+                  客戶名稱: {item.customerName}
+                </Text>
+                <View style={{ flexDirection: "row", marginBottom: 5 }}>
+                  <Text style={{ marginRight: 10 }}>
+                    商品評分: {item.score}
+                  </Text>
+                  <Text>送貨品質: {item.delivery}</Text>
+                </View>
+                <View
+                  style={{
+                    padding: 10,
+                    borderRadius: 6,
+                    backgroundColor: "lightgray",
+                  }}
+                >
+                  <Text>{item.comment}</Text>
+                </View>
               </View>
-            </View>
-          ))}
+            ))}
         </View>
       </ScrollView>
     </>

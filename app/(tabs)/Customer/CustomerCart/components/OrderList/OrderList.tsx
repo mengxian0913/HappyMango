@@ -31,12 +31,12 @@ interface contextProps {
 }
 
 type CartItemType = {
-  PID: string,
-  PName: string,
-  BNum: number,
-  Sell: number,
-  TMoney: number
-}
+  PID: string;
+  PName: string;
+  BNum: number;
+  Sell: number;
+  TMoney: number;
+};
 
 const Context = ({
   totalPrice,
@@ -44,21 +44,27 @@ const Context = ({
   orderItems,
   setOrderItems,
 }: contextProps) => {
-
-  const [data, setData] = useState<CartItemType[]>([]);
+  const [data, setData] = useState<CartItemType[] | null>(null);
   const isFocused = useIsFocused();
   // const [refresh, setRefresh] = useState(false)
   const getCart = async () => {
-    const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/customer/get_cart`, {
-      UID: store.getState().id
-    })
+    const response = await axios.post(
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_cart`,
+      {
+        UID: store.getState().id,
+      },
+    );
     const data = await response.data;
     setData(data);
-  }
+  };
 
   useEffect(() => {
     getCart();
   }, [isFocused]);
+
+  useEffect(() => {
+    setTotalPrice(0);
+  }, [data]);
 
   return (
     <ScrollView>
@@ -68,17 +74,18 @@ const Context = ({
           alignItems: "center",
         }}
       >
-        {data.map((item) => (
-          <ItemCard
-            key={item.PID}
-            orderItems={orderItems}
-            setOrderItems={setOrderItems}
-            dataOfOrderItems={item}
-            totalPrice={totalPrice}
-            setTotoalPrice={setTotalPrice}
-            getCart={getCart}
-          />
-        ))}
+        {data &&
+          data.map((item) => (
+            <ItemCard
+              key={item.PID}
+              orderItems={orderItems}
+              setOrderItems={setOrderItems}
+              dataOfOrderItems={item}
+              totalPrice={totalPrice}
+              setTotoalPrice={setTotalPrice}
+              getCart={getCart}
+            />
+          ))}
       </View>
     </ScrollView>
   );
@@ -141,7 +148,6 @@ const OrderArea = ({ totalPrice, orderItems }: props) => {
 };
 
 const OrderList = () => {
-
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [orderItems, setOrderItems] = useState<orderItemType[]>([]);
 

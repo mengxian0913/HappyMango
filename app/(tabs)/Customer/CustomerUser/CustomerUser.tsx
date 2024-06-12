@@ -11,6 +11,7 @@ import NameSetting from "./components/NameSetting/NameSetting";
 import EmailSetting from "./components/EmailSetting/EmailSetting";
 import PhoneSetting from "./components/PhoneSetting/PhoneSetting";
 import { Logout, store } from "@/scripts/redux";
+import Colors from "@/constants/Colors";
 
 const Header = () => {
   return (
@@ -74,10 +75,10 @@ const SettingList = () => {
 
   const handleLogout = () => {
     store.dispatch(Logout());
-  }
+  };
 
   return (
-    <View style={{alignItems: 'center'}}>
+    <View style={{ alignItems: "center" }}>
       <Header />
       <ScrollView>
         <View
@@ -107,7 +108,16 @@ const SettingList = () => {
         </View>
       </ScrollView>
       <Pressable onPress={() => handleLogout()} style={[styles.pressButton]}>
-        <Text style={{fontSize: 20, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>登出</Text>
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: "700",
+            color: "#FFF",
+            textAlign: "center",
+          }}
+        >
+          登出
+        </Text>
       </Pressable>
     </View>
   );
@@ -118,7 +128,9 @@ const CustomerUser = () => {
     <>
       <ItemStack.Navigator
         initialRouteName="settingList"
-        screenOptions={{ headerShown: false }}
+        screenOptions={{
+          headerShown: false,
+        }}
       >
         <ItemStack.Screen name="settingList" component={SettingList} />
         <ItemStack.Screen name="passwordSetting" component={PasswordSetting} />

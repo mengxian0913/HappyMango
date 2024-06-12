@@ -160,15 +160,17 @@ const Items = () => {
   const [itemDataWhole, setItemDataWhole] = useState<any>([]);
   const [itemDataProcessed, setItemDataProcessed] = useState<any>([]);
   const getItems = async () => {
+    console.log("getItems");
     const response = await axios.get(
       `${process.env.EXPO_PUBLIC_API_URL}/customer/get_product`,
     );
     const data = await response.data;
+    console.log("data: ", data);
     setItemData(data);
   };
 
   useEffect(() => {
-    if(isFocused) getItems();
+    if (isFocused) getItems();
   }, [isFocused]);
 
   useEffect(() => {
