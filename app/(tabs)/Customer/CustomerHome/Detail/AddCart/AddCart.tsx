@@ -49,11 +49,14 @@ const TotalPriceAndButton = ({ totalPrice, handleOnSubmit }: submitProps) => {
         </View>
         <Pressable onPress={handleOnSubmit}>
           <View
-            style={{
-              backgroundColor: Colors.light.tint,
-              borderRadius: 20,
-              padding: 10,
-            }}
+            style={[
+              {
+                backgroundColor: Colors.light.tint,
+                borderRadius: 20,
+                padding: 10,
+              },
+              totalPrice <= 0 && { opacity: 0.4 },
+            ]}
           >
             <Text
               style={{ fontSize: 18, fontWeight: 500, textAlign: "center" }}
@@ -153,6 +156,11 @@ const AddCart = ({ bottomSheetRef }: addCartProps) => {
       navigation.navigate("Login" as never);
       return;
     }
+
+    if (totalAmount <= 0) {
+      return;
+    }
+
     bottomSheetRef.current?.close();
     const response = await axios.post(
       `${process.env.EXPO_PUBLIC_API_URL}/customer/add_to_cart`,

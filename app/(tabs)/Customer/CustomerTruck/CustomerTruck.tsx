@@ -11,6 +11,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { store } from "@/scripts/redux";
 import { screenWidth } from "@/constants/Config";
 import Colors from "@/constants/Colors";
+import { useEvent } from "react-native-reanimated";
 
 const Header = () => {
   return (
@@ -42,6 +43,7 @@ const OrderItem = ({ dataOfOrder }: OrderItemProps) => {
   const orderItems: OrderItemType[] = JSON.parse(
     dataOfOrder.orderItems as string,
   );
+
   return (
     <View style={styles.orderCard}>
       <View style={styles.infoContainer}>
@@ -128,12 +130,12 @@ const Category = ({ setCategory, category }: CategoryProps) => {
   );
 };
 
-const cateMap: {[key: string]: string} = {
+const cateMap: { [key: string]: string } = {
   unchecked: "待確認",
   onprogress: "進行中",
-  cancel: '已取消',
-  done: '已完成'
-}
+  cancel: "已取消",
+  done: "已完成",
+};
 
 const CustomerTruck = () => {
   const getOrderList = async () => {
@@ -165,13 +167,11 @@ const CustomerTruck = () => {
           </View>
 
           <View style={{ alignItems: "center" }}>
-            { data ? 
-            <>
-              {
-                data.some(item => item.OType === category) ?
-                <>
-                  {
-                    data.map(
+            {data ? (
+              <>
+                {data.some((item) => item.OType === category) ? (
+                  <>
+                    {data.map(
                       (item, index) =>
                         item.OType === category && (
                           <OrderItem
@@ -179,23 +179,23 @@ const CustomerTruck = () => {
                             key={item.ONo + index.toString()}
                           />
                         ),
-                    )
-                  }
-                </> :
-                <>
-                  <View style={styles.orderCard}>
-                    <Text>查無 {cateMap[category]} 的訂單</Text>
-                  </View>
-                </>
-              }
-            </>
-            : 
-            <>
-              <View style={styles.orderCard}>
-                <Text>你沒有任何訂單紀錄</Text>
-              </View>
-            </>
-            }
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <View style={styles.orderCard}>
+                      <Text>查無 {cateMap[category]} 的訂單</Text>
+                    </View>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <View style={styles.orderCard}>
+                  <Text>你沒有任何訂單紀錄</Text>
+                </View>
+              </>
+            )}
           </View>
         </ScrollView>
       </GestureHandlerRootView>
