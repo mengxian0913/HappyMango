@@ -7,6 +7,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { screenWidth } from "@/constants/Config";
 import axios from "axios";
 import { store } from "@/scripts/redux";
+import { FeedbackType } from "@/constants/types/orderList";
 
 interface itemProps {
   dataOfOrderItems: orderItemType;
@@ -15,6 +16,7 @@ interface itemProps {
   setTotoalPrice: (key: number) => void;
   getCart: () => Promise<void>;
   totalPrice: number; // 所有品項金額加總
+  addFeedBack: (feedback: (FeedbackType & {id: string})) => void;
 }
 
 const ItemCard = ({
@@ -24,6 +26,7 @@ const ItemCard = ({
   setTotoalPrice,
   getCart,
   totalPrice,
+  addFeedBack
 }: itemProps) => {
   const [onSelected, setOnSelected] = useState<boolean>(false);
   const handleOnSelected = () => {
@@ -35,6 +38,12 @@ const ItemCard = ({
       params: { orderID: {PID: dataOfOrderItems.PID, UID: store.getState().id}},
     })
     getCart();
+    addFeedBack({
+      id: dataOfOrderItems.PID,
+      status: 'warning',
+      title: `${dataOfOrderItems.PID} 成功從購物車移除`,
+      press: false
+    })
   }
 
   useEffect(() => {

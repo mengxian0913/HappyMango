@@ -131,13 +131,15 @@ export function TableCoulumn_TextInput(props: {
 }
 
 export function Feedback(props: {
+  widith?: string;
+  style?: object;
   status: "success" | "error" | "info" | "warning";
   title: string;
   onCancel: () => void;
 }){
   return (
-    <Stack space={3} w="100%" maxW="400">
-      <Alert w="100%" status={props.status} style={{marginTop: 10}}>
+    <Stack space={3} w={ props.widith || "100%"} maxW="400">
+      <Alert w="100%" status={props.status} style={props.style}>
           <VStack space={2} flexShrink={1} w="100%">
             <HStack flexShrink={1} space={2} justifyContent="space-between">
               <HStack space={2} flexShrink={1}>

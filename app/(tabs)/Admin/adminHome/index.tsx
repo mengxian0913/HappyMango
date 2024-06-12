@@ -1,5 +1,5 @@
-import { PropsWithChildren, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Pressable } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, Pressable } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation, useIsFocused, useRoute } from '@react-navigation/native';
 import { uploadImage, launchImageLibrary } from '@/scripts/fileHandler';
@@ -103,7 +103,7 @@ const TabHomeScreen = () => {
       middleLayer={
         <>
           {
-            isLoading ? <Loading style={styles.listFirstCard} /> : 
+            isLoading ? <Loading style={styles.listCard} /> : 
             <>
               {Object.keys(data).map((type, index) => (
                 <MerchandiseTypeView key={type} type={type} data={data} />

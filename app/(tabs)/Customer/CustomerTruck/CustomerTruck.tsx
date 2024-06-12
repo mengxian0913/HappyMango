@@ -46,7 +46,7 @@ const OrderItem = ({ dataOfOrder }: OrderItemProps) => {
     <View style={styles.orderCard}>
       <View style={styles.infoContainer}>
         <Text style={styles.title}>訂單編號:</Text>
-        <Text style={styles.content}>{dataOfOrder.ONo}</Text>
+        <Text style={styles.content}>{dataOfOrder.ONo.toUpperCase()}</Text>
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.title}>運送狀態:</Text>
@@ -121,12 +121,19 @@ const Category = ({ setCategory, category }: CategoryProps) => {
           key={item}
           onPress={() => setCategory(item)}
         >
-          <Text>{item}</Text>
+          <Text>{cateMap[item]}</Text>
         </Pressable>
       ))}
     </View>
   );
 };
+
+const cateMap: {[key: string]: string} = {
+  unchecked: "待確認",
+  onprogress: "進行中",
+  cancel: '已取消',
+  done: '已完成'
+}
 
 const CustomerTruck = () => {
   const getOrderList = async () => {
@@ -158,16 +165,37 @@ const CustomerTruck = () => {
           </View>
 
           <View style={{ alignItems: "center" }}>
-            {data &&
-              data.map(
-                (item, index) =>
-                  item.OType === category && (
-                    <OrderItem
-                      dataOfOrder={item}
-                      key={item.ONo + index.toString()}
-                    />
-                  ),
-              )}
+            { data ? 
+            <>
+              {
+                data.some(item => item.OType === category) ?
+                <>
+                  {
+                    data.map(
+                      (item, index) =>
+                        item.OType === category && (
+                          <OrderItem
+                            dataOfOrder={item}
+                            key={item.ONo + index.toString()}
+                          />
+                        ),
+                    )
+                  }
+                </> :
+                <>
+                  <View style={styles.orderCard}>
+                    <Text>查無 {cateMap[category]} 的訂單</Text>
+                  </View>
+                </>
+              }
+            </>
+            : 
+            <>
+              <View style={styles.orderCard}>
+                <Text>你沒有任何訂單紀錄</Text>
+              </View>
+            </>
+            }
           </View>
         </ScrollView>
       </GestureHandlerRootView>

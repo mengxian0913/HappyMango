@@ -1,16 +1,6 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
-import React, {
-  ReactNode,
-  FC,
-  useEffect,
-  createContext,
-  PropsWithChildren,
-} from "react";
+import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
 import "react-native-reanimated";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -18,7 +8,7 @@ import {
   NavigationContainer,
   createNavigationContainerRef,
 } from "@react-navigation/native";
-import Login from "./Login/Login";
+import Login from "./Login";
 import { NativeBaseProvider } from "native-base";
 import { TabBarIcon } from "@/components/Themed";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -36,7 +26,6 @@ import CustomerUser from "./(tabs)/Customer/CustomerUser/CustomerUser";
 
 import { useSelector, Provider } from "react-redux";
 import { store, State } from "@/scripts/redux";
-import { Store } from "redux";
 
 const navigationRef = createNavigationContainerRef();
 
@@ -133,8 +122,8 @@ function NativeBaseContainer() {
         NewProduct: "admin/new",
         OrderLists: {
           screens: {
-            Order: 'order/list',
-            Details: 'order/details'
+            Order: 'admin/order/list',
+            Details: 'admin/order/details'
           }
         },
         AdminProfile: "admin/profile",

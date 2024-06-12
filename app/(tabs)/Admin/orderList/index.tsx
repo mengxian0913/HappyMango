@@ -28,8 +28,8 @@ const OrderScreen = () => {
   const all_order_data = useRef<AllorderType | null>(null);
   const [isPress, setIsPress] = useState([1, 0, 0]);
   const [latest_order, setLatestOrder] = useState<orderType| null>(null);
-  const [feedback_data, setFeedback] = useState<(FeedbackType & {id: string})[]>([]);
   const [posTabCount, setPosTabCount] = useState<number>(0);
+  const [feedback_data, setFeedback] = useState<(FeedbackType & {id: string})[]>([]);
 
   const closeFeedBack = (id: string) => {
     feedback_data.forEach(feedback => {

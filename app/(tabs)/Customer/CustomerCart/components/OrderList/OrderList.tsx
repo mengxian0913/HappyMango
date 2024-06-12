@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./style";
@@ -14,6 +14,9 @@ import { NavigationProp, useIsFocused } from "@react-navigation/native";
 import { OrderRootStackParamList } from "../../CustomerCart";
 import axios from "axios";
 import { store } from "@/scripts/redux";
+import { Feedback } from "@/components/Themed";
+import { FeedbackType } from "@/constants/types/orderList";
+import { position } from "native-base/lib/typescript/theme/styled-system";
 
 const Header = () => {
   return (
@@ -28,6 +31,7 @@ interface contextProps {
   setTotalPrice: (key: number) => void;
   orderItems: orderItemType[];
   setOrderItems: (key: orderItemType[]) => void;
+  addFeedBack: (feedback: (FeedbackType & {id: string})) => void;
 }
 
 type CartItemType = {
@@ -43,10 +47,10 @@ const Context = ({
   setTotalPrice,
   orderItems,
   setOrderItems,
+  addFeedBack
 }: contextProps) => {
   const [data, setData] = useState<CartItemType[] | null>(null);
   const isFocused = useIsFocused();
-  // const [refresh, setRefresh] = useState(false)
   const getCart = async () => {
     const response = await axios.post(
       `${process.env.EXPO_PUBLIC_API_URL}/customer/get_cart`,
@@ -84,6 +88,7 @@ const Context = ({
               totalPrice={totalPrice}
               setTotoalPrice={setTotalPrice}
               getCart={getCart}
+              addFeedBack={addFeedBack}
             />
           ))}
       </View>
@@ -107,38 +112,27 @@ interface props {
 const OrderArea = ({ totalPrice, orderItems }: props) => {
   const navigation = useNavigation<NavigationProp<OrderRootStackParamList>>();
   const handleSubmitOrder = () => {
-    if (orderItems.length > 0) {
-      navigation.navigate("OrderSetUp", { orderItems });
-    } else {
-      console.log("Empty Selected");
-    }
+    navigation.navigate("OrderSetUp", { orderItems });
   };
 
   return (
     <View
-      style={{
-        width: screenWidth,
-        height: screenHeight * 0.08,
-        backgroundColor: "white",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-around",
-      }}
+      style={styles.bottomCard}
     >
       <View style={{ flexDirection: "row" }}>
-        <Text style={{ fontSize: 20, fontWeight: "600" }}>總金額: </Text>
+        <Text style={{ fontSize: 20, fontWeight: "600" }}>總金額： </Text>
         <Text style={{ fontSize: 20, color: "red", fontWeight: "600" }}>
           {totalPrice}
         </Text>
       </View>
-      <Pressable onPress={handleSubmitOrder}>
+      <Pressable onPress={() => orderItems.length > 0 && handleSubmitOrder()}>
         <View
-          style={{
+          style={[{
             borderRadius: 6,
             backgroundColor: Colors.light.tint,
             padding: 15,
             paddingHorizontal: 20,
-          }}
+          }, (orderItems.length === 0 && { opacity: 0.4 })]}
         >
           <Text>我要下訂&ensp;</Text>
         </View>
@@ -150,20 +144,38 @@ const OrderArea = ({ totalPrice, orderItems }: props) => {
 const OrderList = () => {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [orderItems, setOrderItems] = useState<orderItemType[]>([]);
+  const [feedback_data, setFeedback] = useState<(FeedbackType & {id: string})[]>([]);
+
+  const closeFeedBack = (id: string) => {
+    feedback_data.forEach(feedback => {
+      if (feedback.id === id) feedback.press = true;
+    });
+    setFeedback([...feedback_data]);
+  }
+
+  const addFeedBack = (feedback: (FeedbackType & {id: string})) => {
+    setFeedback([...feedback_data.filter(feedback => !feedback.press), feedback]);
+  }
 
   return (
+    <>  
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View>
+      <View style={{height: '100%', alignItems: 'center'}}>
         <Header />
         <Context
           totalPrice={totalPrice}
           setTotalPrice={setTotalPrice}
           orderItems={orderItems}
           setOrderItems={setOrderItems}
+          addFeedBack={addFeedBack}
         />
+        { feedback_data.length > 0 && feedback_data.map((feedback, index) => (!feedback.press && 
+          <Feedback widith="90%" style={{marginBottom: 10}} key={index} status={feedback.status} title={feedback.title} onCancel={() => closeFeedBack(feedback.id)} />)
+        )}
         <OrderArea totalPrice={totalPrice} orderItems={orderItems} />
       </View>
     </GestureHandlerRootView>
+    </>
   );
 };
 
