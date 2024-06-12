@@ -1,4 +1,11 @@
-import React, { useContext, useMemo, useRef, useState, RefObject, useEffect } from "react";
+import React, {
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  RefObject,
+  useEffect,
+} from "react";
 import { Button, Text, View, Pressable } from "react-native";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { PanGestureHandler } from "react-native-gesture-handler";
@@ -6,7 +13,7 @@ import { ItemContext } from "../Detail";
 import { screenHeight, screenWidth } from "@/constants/Config";
 import Colors from "@/constants/Colors";
 import { useNavigation } from "expo-router";
-import axios from 'axios';
+import axios from "axios";
 import { store } from "@/scripts/redux";
 
 interface submitProps {
@@ -128,29 +135,35 @@ const AddCart = ({ bottomSheetRef }: addCartProps) => {
   const snapPoints = useMemo(() => ["50%"], []);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const item = useContext(ItemContext);
-  const amount = useRef(0);
+  const [amount, setAmount] = useState<number>(0);
 
   const getAmountOfItem = async () => {
-    const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/customer/get_amount`, {
-      PID: item?.id
-    })
-    amount.current = await response.data;
+    const response = await axios.post(
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_amount`,
+      {
+        PID: item?.id,
+      },
+    );
+    setAmount(await response.data);
   };
 
   // 加入購物車
   const handleOnSubmit = async () => {
-    if(store.getState().role === ''){
+    if (store.getState().role === "") {
       navigation.navigate("Login" as never);
       return;
     }
     bottomSheetRef.current?.close();
-    const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/customer/add_to_cart`, {
-      UID: store.getState().id,
-      PID: item.id,
-      PName: item.title,
-      BNum: totalAmount,
-      TMoney: totalAmount * item.sell
-    })
+    const response = await axios.post(
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/add_to_cart`,
+      {
+        UID: store.getState().id,
+        PID: item.id,
+        PName: item.title,
+        BNum: totalAmount,
+        TMoney: totalAmount * item.sell,
+      },
+    );
     navigation.navigate("cart" as never);
   };
 
@@ -188,7 +201,7 @@ const AddCart = ({ bottomSheetRef }: addCartProps) => {
             </Text>
           </View>
           <AmountAndCounter
-            amount={amount.current}
+            amount={amount}
             totalAmount={totalAmount}
             setTotalAmount={setTotalAmount}
           />

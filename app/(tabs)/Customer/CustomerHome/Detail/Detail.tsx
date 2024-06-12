@@ -44,12 +44,12 @@ interface paramsProps {
 
 export const ItemContext = createContext<paramsProps>({
   id: 0,
-  title: '',
+  title: "",
   sell: 0,
   price: 0,
-  description: '',
-  image: '',
-  bestDate: 0
+  description: "",
+  image: "",
+  bestDate: 0,
 });
 
 const ItemDetail = () => {
@@ -63,7 +63,8 @@ const ItemDetail = () => {
 
   const getComments = async () => {
     const response = await axios.post(
-      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_comments`, {
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_comments`,
+      {
         PID: item?.id,
       },
     );
@@ -75,8 +76,7 @@ const ItemDetail = () => {
     getComments();
   }, []);
 
-  useEffect(() => {
-  }, [comments]);
+  useEffect(() => {}, [comments]);
 
   const handleOnPress = () => {
     console.log("Go Back");
@@ -151,6 +151,7 @@ const ItemDetail = () => {
               <View
                 key={index}
                 style={{
+                  width: screenWidth * 0.9,
                   marginVertical: 10,
                   backgroundColor: Colors.light.background,
                   borderRadius: 10,
@@ -203,7 +204,8 @@ const DetailStack = createNativeStackNavigator();
 
 const Detail = () => {
   const route = useRoute();
-  const { id, title, sell, price, description, image, bestDate } = route.params as paramsProps;
+  const { id, title, sell, price, description, image, bestDate } =
+    route.params as paramsProps;
 
   const item = {
     id: id,

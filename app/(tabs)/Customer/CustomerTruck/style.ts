@@ -26,6 +26,30 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginVertical: 10,
     padding: 20,
+    alignItems: "center",
+  },
+
+  infoContainer: {
+    width: screenWidth * 0.9,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  addressContainer: {
+    marginTop: 10,
+    width: screenWidth * 0.9,
+    backgroundColor: Colors.light.tint,
+    padding: 12,
+    borderRadius: 10,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  content: {
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
 
