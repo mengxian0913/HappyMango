@@ -1,16 +1,39 @@
+import axios from "axios";
 import Header from "../Header/Header";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Pressable,
+} from "react-native";
+import { store } from "@/scripts/redux";
+import { useNavigation } from "expo-router";
+import { screenHeight, screenWidth } from "@/constants/Config";
 
 const PhoneSetting = () => {
   const [newPhone, setNewPhone] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigation = useNavigation();
 
-  const handleResetName = () => {
+  const handleResetName = async () => {
     if (!newPhone) {
       setErrorMessage("電話號碼不能為空");
       return;
     }
+
+    const response = await axios.post(
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/reset_phone`,
+      {
+        UID: store.getState().id,
+        newPhone: newPhone,
+      },
+    );
+
+    console.log(await response.data);
+    navigation.goBack();
   };
 
   return (
@@ -26,7 +49,27 @@ const PhoneSetting = () => {
           value={newPhone}
           onChangeText={setNewPhone}
         />
-        <Button title="提交" onPress={handleResetName} />
+        <Pressable
+          onPress={handleResetName}
+          style={{
+            marginTop: 10,
+            backgroundColor: "orange",
+            width: screenWidth * 0.6,
+            borderRadius: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "500",
+              color: "white",
+              padding: 6,
+              textAlign: "center",
+            }}
+          >
+            提交
+          </Text>
+        </Pressable>
       </View>
     </>
   );
