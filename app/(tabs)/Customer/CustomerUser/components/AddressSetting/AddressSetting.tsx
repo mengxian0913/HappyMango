@@ -1,16 +1,38 @@
+import axios from "axios";
 import Header from "../Header/Header";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Pressable,
+} from "react-native";
+import { store } from "@/scripts/redux";
+import { useNavigation } from "expo-router";
+import { screenWidth } from "@/constants/Config";
 
 const AddressSetting = () => {
   const [newLocation, setNewLocation] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigation = useNavigation();
 
-  const handleResetName = () => {
+  const handleResetLocation = async () => {
     if (!newLocation) {
-      setErrorMessage("信箱不能為空");
+      setErrorMessage("地址不能為空");
       return;
     }
+
+    const response = await axios.post(
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/reset_location`,
+      {
+        UID: store.getState().id,
+        newLocation: newLocation,
+      },
+    );
+    console.log(await response.data);
+    navigation.goBack();
   };
 
   return (
@@ -26,7 +48,27 @@ const AddressSetting = () => {
           value={newLocation}
           onChangeText={setNewLocation}
         />
-        <Button title="提交" onPress={handleResetName} />
+        <Pressable
+          onPress={handleResetLocation}
+          style={{
+            marginTop: 10,
+            backgroundColor: "orange",
+            width: screenWidth * 0.6,
+            borderRadius: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "500",
+              color: "white",
+              padding: 6,
+              textAlign: "center",
+            }}
+          >
+            提交
+          </Text>
+        </Pressable>
       </View>
     </>
   );

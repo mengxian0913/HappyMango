@@ -1,21 +1,31 @@
+import axios from "axios";
 import Header from "../Header/Header";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
+import { store } from "@/scripts/redux";
+import { useNavigation } from "expo-router";
+import { screenWidth } from "@/constants/Config";
 
 const PasswordSetting = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  const handleResetPassword = () => {
-    // 在这里编写重设密码的逻辑
+  const navigation = useNavigation();
+  const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
       setErrorMessage("密碼輸入不同");
       return;
     }
 
-    // 执行密码重设请求
-    // 这里可以发送密码重设请求到服务器，处理成功或失败的响应
+    const response = await axios.post(
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/reset_password`,
+      {
+        UID: store.getState().id,
+        newPassword: newPassword,
+      },
+    );
+    console.log(await response.data);
+    navigation.goBack();
   };
 
   return (
@@ -39,7 +49,27 @@ const PasswordSetting = () => {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
-        <Button title="提交" onPress={handleResetPassword} />
+        <Pressable
+          onPress={handleResetPassword}
+          style={{
+            marginTop: 10,
+            backgroundColor: "orange",
+            width: screenWidth * 0.6,
+            borderRadius: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "500",
+              color: "white",
+              padding: 6,
+              textAlign: "center",
+            }}
+          >
+            提交
+          </Text>
+        </Pressable>
       </View>
     </>
   );

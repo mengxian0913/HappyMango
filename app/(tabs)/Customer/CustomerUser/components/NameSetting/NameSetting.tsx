@@ -1,20 +1,38 @@
+import axios from "axios";
 import Header from "../Header/Header";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Pressable,
+} from "react-native";
+import { store } from "@/scripts/redux";
+import { useNavigation } from "expo-router";
+import { screenWidth } from "@/constants/Config";
 
 const NameSetting = () => {
   const [newName, setNewName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigaion = useNavigation();
 
-  const handleResetName = () => {
-    // 在这里编写重设姓名的逻辑
+  const handleResetName = async () => {
     if (!newName) {
-      setErrorMessage("新姓名不能为空");
+      setErrorMessage("新姓名不能為空");
       return;
     }
 
-    // 执行姓名重设请求
-    // 这里可以发送姓名重设请求到服务器，处理成功或失败的响应
+    const response = await axios.post(
+      `${process.env.EXPO_PUBLIC_API_URL}/customer/reset_name`,
+      {
+        UID: store.getState().id,
+        newName: newName,
+      },
+    );
+    console.log(await response.data);
+    navigaion.goBack();
   };
 
   return (
@@ -30,7 +48,27 @@ const NameSetting = () => {
           value={newName}
           onChangeText={setNewName}
         />
-        <Button title="提交" onPress={handleResetName} />
+        <Pressable
+          onPress={handleResetName}
+          style={{
+            marginTop: 10,
+            backgroundColor: "orange",
+            width: screenWidth * 0.6,
+            borderRadius: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "500",
+              color: "white",
+              padding: 6,
+              textAlign: "center",
+            }}
+          >
+            提交
+          </Text>
+        </Pressable>
       </View>
     </>
   );
