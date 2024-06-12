@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Image, Pressable } from 'react-native';
+import { PropsWithChildren, useEffect, useState } from 'react';
+import { ActivityIndicator, Image, Pressable } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation, useIsFocused, useRoute } from '@react-navigation/native';
 import { uploadImage, launchImageLibrary } from '@/scripts/fileHandler';
 import { productType, overViewType, commentType } from '@/constants/types/adminHome';
 import axios from 'axios';
 import styles from './style';
 
-import { Text, View, TabBarIcon, TableColumn_SelectInput, TableCoulumn_TextInput } from '@/components/Themed';
+import { Text, View, TabBarIcon, TableColumn_SelectInput, TableCoulumn_TextInput, Loading } from '@/components/Themed';
 import AdminTemplate from '@/components/AdminTemplate';
 
 const warningState = {
@@ -60,15 +60,21 @@ const TabHomeScreen = () => {
   const isFocused = useIsFocused();
   const [data, setData] = useState<{[key: string]: productType[]}>({});
   const [overview, setOverview] = useState<overViewType>();
+  const [isLoading, setIsLoading] = useState(false);
+
   console.log(process.env.EXPO_PUBLIC_API_URL);
   useEffect(() => {
     if(isFocused){
+      setIsLoading(true);
       axios.get(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_product`)
         .then(response => {
           setData(rebuildListData(response.data));
         })
         .catch(error => {
           console.error('Error:', error);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     
       axios.get(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_seller_overview`)
@@ -96,9 +102,14 @@ const TabHomeScreen = () => {
       }
       middleLayer={
         <>
-          {Object.keys(data).map((type, index) => (
-            <MerchandiseTypeView key={type} type={type} data={data} />
-          ))}
+          {
+            isLoading ? <Loading style={styles.listFirstCard} /> : 
+            <>
+              {Object.keys(data).map((type, index) => (
+                <MerchandiseTypeView key={type} type={type} data={data} />
+              ))}
+            </>
+          }
         </>
       }
     />
@@ -132,7 +143,7 @@ const MerchandiseView = (props: {
         <Text style={styles.listCardText}>商品名稱：{props.item.name}</Text>
         <Text
           style={{fontWeight: 'bold', padding: 2, paddingTop: 8}}
-          onPress={() => navigation.navigate({name: 'Details', params: {id: props.item.id, img: props.item.img, imgKey: props.item.imgKey}} as never)}
+          onPress={() => navigation.navigate({name: 'Details', params: {id: props.item.id, name: props.item.name, img: props.item.img, imgKey: props.item.imgKey}} as never)}
         >點擊進行查看</Text>
       </View>
     </View>
@@ -141,10 +152,11 @@ const MerchandiseView = (props: {
 
 
 
-const DetailsScreen = (props: any) => {
-  const item = props.route.params;
+const DetailsScreen = () => {
+  const item = useRoute().params as productType;
+  console.log(item)
   const navigation = useNavigation();
-  const [name, setName] = useState("");
+  const [name, setName] = useState(item?.name);
   const [type, setType] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<string>("");
@@ -161,6 +173,7 @@ const DetailsScreen = (props: any) => {
   const [pressToDelete, setPressToDelete] = useState(false);
   const [warning, setWarning] = useState(warningState);
   const [imageKey, setImageKey] = useState(item.imgKey);
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
     let flag = true;
@@ -254,6 +267,7 @@ const DetailsScreen = (props: any) => {
             console.error('Error:', error);
         })    
     }else{
+      setIsLoading(true);
       axios.get(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_specific_product`, {
         params: {
           id: item.id
@@ -261,7 +275,6 @@ const DetailsScreen = (props: any) => {
       })
         .then(response => {
           const data = response.data;
-          setName(data.name);
           setDescription(data.description);
           setDate(data.date);
           setType(data.type);
@@ -270,6 +283,12 @@ const DetailsScreen = (props: any) => {
           setCount(data.count as string);
           setScore(data.score);
           setEvaluationCount(data.ecount);
+        })
+        .catch(err => {
+          console.error(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
         })
     }
     setImageChange(false);
@@ -303,8 +322,8 @@ const DetailsScreen = (props: any) => {
             />
           </Pressable>
           <View style={styles.imageCard}>
-            <Text style={[styles.cardTitle, {marginBottom: 0}]}>{name}</Text>
-            <Text style={styles.cardSubTitle}>{name.toLowerCase()}</Text>
+            <Text style={[styles.cardTitle, {marginBottom: 0}]}>{item.name}</Text>
+            <Text style={styles.cardSubTitle}>{item.name.toLowerCase()}</Text>
             <Pressable
               style={styles.imageCardBottom}
               onPress={() => evaluationCount !== 0 && setShowComment(!showComment) }
@@ -320,9 +339,14 @@ const DetailsScreen = (props: any) => {
         </>
       }
       middleLayer={
-        showComment && comments !== null ?
         <>
-          <Text>顧客評論</Text>
+        { isLoading ? <Loading style={styles.mainCard} /> : 
+        <>
+        { showComment && comments !== null ?
+        <>
+          <View style={[styles.listType, {height: 'auto'}]}>
+            <Text >顧客評論</Text>
+          </View>
           {comments.map((comment, index) => (
             <CommentView key={index} comment={comment} />
           ))}
@@ -367,6 +391,10 @@ const DetailsScreen = (props: any) => {
             </Text>
           </Pressable>
         </>
+        }
+        </>
+      }
+      </>
       }
     />
   )
@@ -377,13 +405,14 @@ const CommentView = (props: {
 }) => {
   return (
     <View style={[styles.mainCard, {width: '100%', marginLeft: 0, borderCurve: 'circular', padding: 10}]}>
-      <Text>顧客名稱：{props.comment.customer}</Text>
-      <View style={{flexDirection: 'row'}}>
+      <Text style={{fontWeight: 'bold', marginBottom: 5}}>顧客名稱：{props.comment.customer}</Text>
+      <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
         <Text>商品品質：{props.comment.grade}</Text>
-        <Text>送貨品質：{props.comment.speed}</Text>
+        <TabBarIcon name="star" size={20} color={'#FFD52D'} />
+        <Text style={{marginLeft: 20,}}>送貨品質：{props.comment.speed}</Text>
         <TabBarIcon name="star" size={20} color={'#FFD52D'} />
       </View>
-      <View style={{backgroundColor: '#F1F1F1', padding: 10}}>
+      <View style={{backgroundColor: '#F1F1F1', padding: 10, minHeight: 60, width: '100%', marginTop: 10}}>
         <Text>{props.comment.content}</Text>
       </View>
     </View>

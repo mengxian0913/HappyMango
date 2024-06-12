@@ -1,3 +1,4 @@
+import { Feedback } from '@/components/Themed';
 export interface orderType{
     id: string,
     time: string,
@@ -30,4 +31,10 @@ export interface orderDetailsType{
     total_cost: number,
     content: productType[],
     type: string
+}
+
+export interface FeedbackType{
+    status: "success" | "error" | "info" | "warning",
+    title: string,
+    press: boolean
 }

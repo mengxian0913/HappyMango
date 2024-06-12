@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     listType: {
         fontSize: 18,
         padding: 5,
-        paddingLeft: 10,
+        paddingHorizontal: 10,
         fontWeight: 'bold',
         backgroundColor: '#FFD52D',
         height: 50,

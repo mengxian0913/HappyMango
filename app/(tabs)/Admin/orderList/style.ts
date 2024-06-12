@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
     },
     navigator: {
         marginVertical: 20,
-        width: '90%',
+        width: '100%',
+        alignItems: 'center',
         height: 50,
-        marginLeft: 20,
         borderRadius: 30,
         backgroundColor: "#FFF",
         flexDirection: 'row',

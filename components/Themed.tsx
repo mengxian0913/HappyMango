@@ -1,4 +1,4 @@
-import { Text as DefaultText, View as DefaultView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Text as DefaultText, View as DefaultView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
 import React from 'react';
@@ -131,20 +131,20 @@ export function TableCoulumn_TextInput(props: {
 }
 
 export function Feedback(props: {
-  status: "success" | "error" | "info" | "warning",
-  title: string,
-  onCancel: React.Dispatch<React.SetStateAction<boolean>>
+  status: "success" | "error" | "info" | "warning";
+  title: string;
+  onCancel: () => void;
 }){
   return (
     <Stack space={3} w="100%" maxW="400">
-      <Alert w="100%" status={props.status}>
+      <Alert w="100%" status={props.status} style={{marginTop: 10}}>
           <VStack space={2} flexShrink={1} w="100%">
             <HStack flexShrink={1} space={2} justifyContent="space-between">
               <HStack space={2} flexShrink={1}>
                 <Alert.Icon mt="1" />
                 <Text>{props.title}</Text>
               </HStack>
-              <IconButton onPressIn={() => props.onCancel(false)} variant="unstyled" _focus={{
+              <IconButton onPressIn={() => props.onCancel()} variant="unstyled" _focus={{
                   borderWidth: 0
                 }} icon={<CloseIcon size="3" />} _icon={{
                   color: "coolGray.600"
@@ -154,6 +154,14 @@ export function Feedback(props: {
           </VStack>
         </Alert>
     </Stack>
+  )
+}
+
+export function Loading(props: {style: object} ) {
+  return (
+    <View style={props.style}>
+      <ActivityIndicator size="small" color="#FFD52D" />
+    </View>
   )
 }
 

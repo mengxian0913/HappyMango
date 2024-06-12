@@ -82,7 +82,7 @@ export default function RootLayout() {
 
 function NativeBaseContainer() {
   const linking: any = {
-    prefixes: ['http://localhost:8081', 'https://coordinator-output-reject-thing.trycloudflare.com'],
+    prefixes: ['http://localhost:8081', 'https://me-eg-symphony-licensing.trycloudflare.com/'],
     config: {
       screens: {
         Login: 'login',
@@ -118,8 +118,8 @@ function NativeBaseContainer() {
         NewProduct: 'admin/new',
         OrderLists: {
           screens: {
-            Order: 'order/list',
-            Details: 'order/details'
+            Order: 'admin/order/list',
+            Details: 'admin/order/details'
           }
         },
         AdminProfile: 'admin/profile',

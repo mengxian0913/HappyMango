@@ -89,6 +89,7 @@ export default function TabAdminScreen(params: any) {
   }
 
   useEffect(() => {
+    setUpdate(false);
     if(!isFocused) return;
     setPressed(false);
     setSuccess(false);
@@ -139,7 +140,7 @@ export default function TabAdminScreen(params: any) {
           <Pressable onPress={() => handleLogout()} style={[styles.pressButton]}>
             <Text style={{fontSize: 20, fontWeight: '700', color: '#FFF', textAlign: 'center'}}>登出商家</Text>
           </Pressable>
-          {success && <Feedback status="success" title="成功修改商家檔案" onCancel={setSuccess}/>}
+          {success && <Feedback status="success" title="成功修改商家檔案" onCancel={() => setSuccess(false)}/>}
         </>
       }
     />

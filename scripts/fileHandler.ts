@@ -39,7 +39,7 @@ export const uploadImage = async (params: ImagePropsType) => {
     const file = await urltoFile(params.url, 'image.jpeg', 'image/jpeg');
     formData.append('file', file);
     try {
-        const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/upload_product_image`, formData, {
+        const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/admin/upload_product_image`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }

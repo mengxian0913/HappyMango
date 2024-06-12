@@ -1,8 +1,8 @@
 import { Pressable } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation, useIsFocused, useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { orderType, AllorderType, productType, orderDetailsType } from '@/constants/types/orderList';
+import { orderType, AllorderType, productType, orderDetailsType, FeedbackType } from '@/constants/types/orderList';
 import { TextInput } from '@/components/Themed';
 import styles from './style';
 import axios from 'axios';
@@ -21,35 +21,49 @@ const rebuildOrderData = (listData: orderType[]) => {
 }
 
 const OrderScreen = () => {
+  const params = useRoute().params as {feedback: FeedbackType & {id: string}};
   const isFocused = useIsFocused();
   const navigation = useNavigation();
   const [data, setData] = useState<{[key: string]: orderType[]}>({});
   const all_order_data = useRef<AllorderType | null>(null);
   const [isPress, setIsPress] = useState([1, 0, 0]);
   const [latest_order, setLatestOrder] = useState<orderType| null>(null);
-  const [feedback_data, setFeedbackData] = useState([{
-    status: "" as "success" | "error" | "info" | "warning",
-    title: "",
-    press: false
-  }]);
+  const [feedback_data, setFeedback] = useState<(FeedbackType & {id: string})[]>([]);
+  const [posTabCount, setPosTabCount] = useState<number>(0);
 
-  const addFeedback = (feedback: {id: string, status: "success" | "error" | "info" | "warning", title: string, press: boolean}) => {
-    setFeedbackData([...feedback_data, feedback]);
+  const closeFeedBack = (id: string) => {
+    feedback_data.forEach(feedback => {
+      if (feedback.id === id) feedback.press = true;
+    });
+    setFeedback([...feedback_data]);
   }
+
+  const onLayout = (event: any) => {
+    const { width } = event.nativeEvent.layout;
+    setPosTabCount(width / 3.5);
+  };
+
+  useEffect(() => {
+    if(params?.hasOwnProperty("feedback") && params.feedback != null){
+      setFeedback([...feedback_data.filter(feedback => !feedback.press), params.feedback]);
+    } 
+  }, [params?.feedback]);
 
   useEffect(() => {
     console.log(`${process.env.EXPO_PUBLIC_API_URL}/get_all_order`);
+    if(!isFocused) return;
     setIsPress([1, 0, 0]);
     axios.get<AllorderType>(`${process.env.EXPO_PUBLIC_API_URL}/admin/get_all_order`)
-    .then(response => {
-      all_order_data.current = response.data;
-      setData(rebuildOrderData(all_order_data.current.onprogress));
-      setLatestOrder(all_order_data.current.unchecked.slice(-1)[0]);
-    })
-    .catch(err => {
-      console.error(err);
-    })
-  }, [isFocused])
+      .then(response => {
+        all_order_data.current = response.data;
+        setData(rebuildOrderData(all_order_data.current.onprogress));
+        setLatestOrder(all_order_data.current.unchecked.slice(-1)[0]);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+  }, [isFocused]);
+
 
   return (
     <AdminTemplate
@@ -57,23 +71,29 @@ const OrderScreen = () => {
         <>
           <Text style={styles.title}>查看訂單</Text>
           <Pressable
-            onPress={() => navigation.navigate({name: 'Details', params: {id: latest_order?.id}} as never)}
+            onPress={() => latest_order && navigation.navigate({name: 'Details', params: {id: latest_order?.id}} as never)}
             style={{width: '100%'}}
           >
             <View style={styles.mainCard}>
-              <Text style={styles.cardTitle}>最新訂單</Text>
-              <Text style={styles.cardContent}>訂單編號：{latest_order?.id}</Text>
-              <Text style={styles.cardContent}>訂單人：{latest_order?.customer}</Text>
-              <Text style={styles.cardContent}>下訂時間：{latest_order?.time}</Text>
-              <Text style={styles.cardEvent}>點擊進行查看 </Text>
+              <Text style={styles.cardTitle}>{latest_order ? "最新訂單" : "現在未有訂單"}</Text>
+              <Text style={styles.cardContent}>訂單編號：{latest_order ? latest_order?.id : 'NaN'}</Text>
+              <Text style={styles.cardContent}>訂單人：{latest_order ? latest_order?.customer : 'NaN'}</Text>
+              <Text style={styles.cardContent}>下訂時間：{latest_order ? latest_order?.time : 'NaN'}</Text>
+              { latest_order && <Text style={styles.cardEvent}>點擊進行查看 </Text> }
             </View>
           </Pressable>
-          { feedback_data.map((feedback, index) => (
-            !feedback.press && feedback.title.length > 0 && <Feedback key={index} status={feedback.status} title={feedback.title} onCancel={() => feedback.press = true} />
-          ))}
+        </>
+      }
+      middleLayer={
+        <>
+          { feedback_data.length > 0 && feedback_data.map((feedback, index) => (!feedback.press && 
+            <Feedback key={index} status={feedback.status} title={feedback.title} onCancel={() => closeFeedBack(feedback.id)} />)
+          )}
           { all_order_data.current &&
-            <View style={styles.navigator}>
-              <Text style={[styles.tabLabel, {left: 110}]}>{all_order_data.current.onprogress.length}</Text>
+            <View onLayout={onLayout} style={styles.navigator}>
+              { all_order_data.current.onprogress.length > 0 &&
+                <Text style={[styles.tabLabel, {left: posTabCount}]}>{all_order_data.current.onprogress.length}</Text>
+              }
               <Pressable
                 onPressIn={() => setIsPress([1, 0, 0])}
                 style={[(isPress[0] ? {backgroundColor: '#FFD52D'} : {backgroundColor: '#FFF'}), styles.navigatorTab]}
@@ -81,7 +101,9 @@ const OrderScreen = () => {
               >
                 <Text style={{textAlign: 'center'}}>進行中的訂單</Text>
               </Pressable>
-              <Text style={[styles.tabLabel, {left: 220}]}>{all_order_data.current.unchecked.length}</Text>
+              { all_order_data.current.unchecked.length > 0 &&
+                <Text style={[styles.tabLabel, {left: posTabCount*2}]}>{all_order_data.current.unchecked.length}</Text>
+              }
               <Pressable
                 onPressIn={() => setIsPress([0, 1, 0])}
                 style={[(isPress[1] ? {backgroundColor: '#FFD52D'} : {backgroundColor: '#FFF'}), styles.navigatorTab]}
@@ -98,12 +120,11 @@ const OrderScreen = () => {
               </Pressable>
             </View>
            }
+          { Object.keys(data).map((time, index) => (
+              <TimeBasedView key={index} time={time} data={data} />
+            ))
+          }
         </>
-      }
-      middleLayer={
-        Object.keys(data).map((time, index) => (
-          <TimeBasedView addFeedback={addFeedback} key={index} time={time} data={data} />
-        ))
       }
     />
   );
@@ -112,12 +133,6 @@ const OrderScreen = () => {
 const TimeBasedView = (props: {
   time: string
   data: {[key: string]: orderType[]},
-  addFeedback: (feedback: {
-    id: string;
-    status: "success" | "error" | "info" | "warning";
-    title: string;
-    press: boolean;
-}) => void
 }) => {
   return (
     <>
@@ -125,7 +140,7 @@ const TimeBasedView = (props: {
         <Text style={styles.listTime}>{props.time}</Text>
       </View>
       {props.data[props.time].map((item, index) => (
-        <OrderView key={index} index={index} item={item} addFeedback={props.addFeedback} />
+        <OrderView key={index} index={index} item={item} />
       ))}
     </>
   )
@@ -134,12 +149,6 @@ const TimeBasedView = (props: {
 const OrderView = (props: {
   index: number,
   item: orderType,
-  addFeedback: (feedback: {
-    id: string;
-    status: "success" | "error" | "info" | "warning";
-    title: string;
-    press: boolean;
-}) => void
 }) => {
   const navigation = useNavigation();
   return (
@@ -147,7 +156,7 @@ const OrderView = (props: {
       <Text style={styles.listCardText}>訂單編號：{props.item.id}</Text>
       <Text style={styles.listCardText}>訂單人：{props.item.customer}</Text>
       <Text
-        onPress={() => navigation.navigate({name: 'Details', params: {id: props.item.id, addFeedback: props.addFeedback}} as never)}
+        onPress={() => navigation.navigate({name: 'Details', params: {id: props.item.id}} as never)}
         style={{fontWeight: 'bold', padding: 2, paddingTop: 8}}
       >點擊進行查看 </Text>
     </View>
@@ -157,27 +166,25 @@ const OrderView = (props: {
 const DetailsScreen = (props: any) => {
   const isFocused = useIsFocused();
   const item = props.route.params;
-  const addFeedback = props.route.params.addFeedback;
   const navigation = useNavigation();
   const [order, setOrder] = useState<orderDetailsType | null>(null);
   const [cancelFactor, setCancelFactor] = useState("");
+  const [feedback, setFeedback] = useState<FeedbackType & {id: string}>();
 
   const handleConfirm = () => {
     axios.post(`${process.env.EXPO_PUBLIC_API_URL}/admin/confirm_order`, {
       id: item.id
     })
-      .then(res => {
-        console.log(res.data);
-        addFeedback({
+      .catch(err => {
+        console.error(err);
+      })
+      .finally(() => {
+        setFeedback({
           id: item.id,
           status: "success",
           title: `Order ${item.id} is confirmed.`,
           press: false
-        })
-        navigation.navigate('Order' as never);
-      })
-      .catch(err => {
-        console.error(err);
+        });
       })
   }
 
@@ -186,19 +193,23 @@ const DetailsScreen = (props: any) => {
       id: item.id,
       factor: cancelFactor
     })
-      .then(res => {
-        addFeedback({
+      .catch(err => {
+        console.error(err);
+      })
+      .finally(() => {
+        setFeedback({
           id: item.id,
           status: "warning",
           title: `Order ${item.id} is cancel.`,
           press: false
         })
-        navigation.navigate('Order' as never);
-      })
-      .catch(err => {
-        console.error(err);
       })
   }
+
+  useEffect(() => {
+    console.log(feedback);
+    if(feedback) navigation.navigate({name: 'Order', params: {feedback}} as never);
+  }, [feedback]);
 
   useEffect(() => {
     if(!isFocused) return;
@@ -335,7 +346,7 @@ const OrderStack = createNativeStackNavigator();
 export default function OrderStackScreen() {
   return (
     <OrderStack.Navigator screenOptions={{ headerShown: false }}>
-      <OrderStack.Screen name="Order" component={OrderScreen} />
+      <OrderStack.Screen name="Order" component={OrderScreen} initialParams={{}} />
       <OrderStack.Screen name="Details" component={DetailsScreen} />
     </OrderStack.Navigator>
   );
