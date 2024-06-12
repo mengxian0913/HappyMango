@@ -18,7 +18,11 @@ import {
   Image,
   Button,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  NavigationProp,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import styles from "./styles";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { screenWidth } from "@/constants/Config";
@@ -53,7 +57,7 @@ export const ItemContext = createContext<paramsProps>({
 });
 
 const ItemDetail = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<DetailRootStack>>();
   const bottomsSheetRef = useRef<BottomSheet>(null);
 
   const scrollViewRef = useRef<ScrollView>(null);
@@ -146,6 +150,25 @@ const ItemDetail = () => {
             </View>
           </View>
 
+          {comments.length > 0 && (
+            <Pressable
+              onPress={() => navigation.navigate("CommentDetail", comments)}
+            >
+              <View style={styles.commentContainer}>
+                <Text style={{ flex: 7 }}>全部評論({comments.length})</Text>
+                <Text style={{ flex: 1, fontSize: 12, color: "gray" }}>
+                  展開
+                </Text>
+                <SimpleLineIcons
+                  name="arrow-right"
+                  size={16}
+                  color="black"
+                  style={styles.commentIcon}
+                />
+              </View>
+            </Pressable>
+          )}
+
           <View>
             {comments.map((item: any, index) => (
               <View
@@ -200,7 +223,12 @@ const ItemDetail = () => {
   );
 };
 
-const DetailStack = createNativeStackNavigator();
+type DetailRootStack = {
+  ItemDetail: undefined;
+  CommentDetail: CommentType[];
+};
+
+const DetailStack = createNativeStackNavigator<DetailRootStack>();
 
 const Detail = () => {
   const route = useRoute();
@@ -231,19 +259,3 @@ const Detail = () => {
 };
 
 export default Detail;
-
-// <Pressable
-//             onPress={() => navigation.navigate("CommentDetail" as never)}
-//           >
-//             <View style={styles.commentContainer}>
-//               <Text style={{ flex: 7 }}>全部評論(25)</Text>
-//               <Text style={{ flex: 1, fontSize: 12, color: "gray" }}>展開</Text>
-//               <SimpleLineIcons
-//                 name="arrow-right"
-//                 size={16}
-//                 color="black"
-//                 style={styles.commentIcon}
-//               />
-//             </View>
-//           </Pressable>
-//

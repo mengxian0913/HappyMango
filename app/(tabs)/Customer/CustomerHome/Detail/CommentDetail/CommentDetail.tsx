@@ -9,25 +9,18 @@ import Colors from "@/constants/Colors";
 import axios from "axios";
 import { CommentType } from "@/constants/types/customerHome";
 import { screenWidth } from "@/constants/Config";
+import { useRoute } from "@react-navigation/native";
+import { commentType } from "@/constants/types/adminHome";
 
 const CommentDetail = () => {
   const navigation = useNavigation();
   const item = useContext(ItemContext);
-  const [comments, setComments] = useState<CommentType[]>([]);
-
-  const getComments = async () => {
-    const response = await axios.post(
-      `${process.env.EXPO_PUBLIC_API_URL}/customer/get_comments`,
-      {
-        PID: item?.id,
-      },
-    );
-    const data = await response.data;
-    setComments(data);
-  };
+  // const [comments, setComments] = useState<CommentType[]>([]);
+  const route = useRoute();
+  const comments = route.params as commentType[];
 
   useEffect(() => {
-    getComments();
+    console.log("comments: ", comments);
   }, []);
 
   return (
@@ -54,13 +47,13 @@ const CommentDetail = () => {
                 }}
               >
                 <Text style={{ fontWeight: "500", marginBottom: 5 }}>
-                  客戶名稱: {item.customerName}
+                  客戶名稱: {item.PName}
                 </Text>
                 <View style={{ flexDirection: "row", marginBottom: 5 }}>
                   <Text style={{ marginRight: 10 }}>
-                    商品評分: {item.score}
+                    商品評分: {item.Grade}
                   </Text>
-                  <Text>送貨品質: {item.delivery}</Text>
+                  <Text>送貨品質: {item.Speed}</Text>
                 </View>
                 <View
                   style={{
@@ -69,7 +62,7 @@ const CommentDetail = () => {
                     backgroundColor: "lightgray",
                   }}
                 >
-                  <Text>{item.comment}</Text>
+                  <Text>{item.EComment}</Text>
                 </View>
               </View>
             ))}
