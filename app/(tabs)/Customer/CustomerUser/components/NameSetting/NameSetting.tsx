@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Pressable,
 } from "react-native";
-import { store } from "@/scripts/redux";
+import { store, userLogin } from "@/scripts/redux";
 import { useNavigation } from "expo-router";
 import { screenWidth } from "@/constants/Config";
 
@@ -32,7 +32,16 @@ const NameSetting = () => {
       },
     );
     console.log(await response.data);
-    navigaion.goBack();
+
+    store.dispatch(
+      userLogin({
+        id: store.getState().id,
+        name: newName,
+        address: store.getState().address,
+        phone: store.getState().phone,
+      }),
+    ),
+      navigaion.goBack();
   };
 
   return (
